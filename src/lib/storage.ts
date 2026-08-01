@@ -8,6 +8,7 @@ const KEYS = {
   spotifyClientId: 'wh_spotify_client_id_v1',
   pkceVerifier: 'wh_spotify_pkce_verifier_v1',
   trackCache: 'wh_spotify_track_cache_v1',
+  minYear: 'wh_min_year_v1',
 } as const
 
 function read<T>(key: string): T | null {
@@ -35,6 +36,7 @@ export function loadGameState(): GameState | null {
   if (!saved) return null
   return {
     ...saved,
+    minYear: saved.minYear ?? 0,
     pendingPlacement: saved.pendingPlacement ?? null,
     bids: saved.bids ?? [],
     activeBidderId: saved.activeBidderId ?? null,
@@ -43,6 +45,16 @@ export function loadGameState(): GameState | null {
       tokens: typeof player.tokens === 'number' ? player.tokens : START_TOKENS,
     })),
   }
+}
+
+/** The oldest-year setting is remembered across games, so a group that always
+ * plays from a given decade does not have to pick it every time. */
+export function loadMinYear(): number {
+  return read<number>(KEYS.minYear) ?? 0
+}
+
+export function saveMinYear(minYear: number) {
+  write(KEYS.minYear, minYear)
 }
 
 export function saveGameState(state: GameState) {

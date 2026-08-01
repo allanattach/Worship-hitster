@@ -13,7 +13,7 @@ import {
   setViewingPlayer,
   startBid,
 } from '../lib/gameLogic'
-import { clearGameState, loadGameState, saveGameState } from '../lib/storage'
+import { clearGameState, loadGameState, saveGameState, saveMinYear } from '../lib/storage'
 import type { GameState } from '../types'
 
 /** How many steps back undo can reach. Deep enough for a misclick and the turn
@@ -32,6 +32,7 @@ const SETUP_STATE: GameState = {
   lastResult: null,
   winnerId: null,
   targetCards: 10,
+  minYear: 0,
   pendingPlacement: null,
   bids: [],
   activeBidderId: null,
@@ -84,8 +85,9 @@ export function useGameState() {
     })
   }, [])
 
-  const startGame = useCallback((playerNames: string[]) => {
-    setTracked({ present: createInitialGameState(playerNames), past: [] })
+  const startGame = useCallback((playerNames: string[], minYear: number) => {
+    saveMinYear(minYear)
+    setTracked({ present: createInitialGameState(playerNames, minYear), past: [] })
   }, [])
 
   const resetGame = useCallback(() => {

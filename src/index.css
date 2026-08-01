@@ -353,6 +353,53 @@ img {
   font-size: 0.88rem;
 }
 
+.setup-note {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.year-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.year-chip {
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  font-size: 0.85rem;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background 0.16s, border-color 0.16s, color 0.16s;
+}
+
+.year-chip:hover {
+  border-color: var(--accent);
+}
+
+.year-chip--active {
+  border-color: transparent;
+  background: linear-gradient(140deg, var(--accent), var(--accent-2));
+  color: var(--accent-ink);
+}
+
+.year-custom {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.year-input {
+  flex: 0 0 8rem;
+  padding: 8px 12px;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- Spotify panel ---------- */
 
 .spotify-connect {

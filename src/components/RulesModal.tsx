@@ -64,6 +64,10 @@ export function RulesModal({ onClose }: RulesModalProps) {
             1885. De ældste årstal er forskningsskøn og ikke eksakte år – det gør ingen forskel i spillet, da der
             ikke ligger andre kort tæt på dem.
           </p>
+          <p>
+            Vil I helst spille om nyere musik, kan I sætte en <strong>ældste årgang</strong> når spillet startes –
+            så er alt ældre end det årstal helt ude af bunken. Valget huskes til næste spil.
+          </p>
           <h3 className="rules-subheading">Brikker</h3>
           <p>
             Alle starter med <strong>2 brikker</strong>. Du tjener en ny ved – ud over årstallet – også at kunne

@@ -3,6 +3,13 @@ import type { GameState, PlacedCard, Player, ResolvedBid, Song } from '../types'
 
 export const TARGET_CARDS = 10
 export const START_TOKENS = 2
+/** minYear value meaning "no limit". */
+export const ALL_YEARS = 0
+
+/** The songs a game would be played with, given the oldest year allowed. */
+export function availableSongs(minYear: number): Song[] {
+  return minYear > ALL_YEARS ? SONGS.filter((song) => song.year >= minYear) : SONGS
+}
 
 export function shuffle<T>(input: T[]): T[] {
   const arr = [...input]
@@ -17,7 +24,7 @@ function makePlayerId(name: string, index: number) {
   return `${index}-${name.trim().toLowerCase().replace(/\s+/g, '-')}-${Date.now().toString(36)}`
 }
 
-export function createInitialGameState(playerNames: string[]): GameState {
+export function createInitialGameState(playerNames: string[], minYear: number = ALL_YEARS): GameState {
   const players: Player[] = playerNames.map((name, index) => ({
     id: makePlayerId(name, index),
     name: name.trim(),
@@ -25,7 +32,7 @@ export function createInitialGameState(playerNames: string[]): GameState {
     tokens: START_TOKENS,
   }))
 
-  const deck = shuffle(SONGS)
+  const deck = shuffle(availableSongs(minYear))
   // Give each player one free starter card to seed their timeline.
   const startCards: PlacedCard[] = []
   for (let i = 0; i < players.length; i++) {
@@ -48,6 +55,7 @@ export function createInitialGameState(playerNames: string[]): GameState {
     lastResult: null,
     winnerId: null,
     targetCards: TARGET_CARDS,
+    minYear,
     pendingPlacement: null,
     bids: [],
     activeBidderId: null,

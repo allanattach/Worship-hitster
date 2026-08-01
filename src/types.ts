@@ -75,6 +75,8 @@ export interface GameState {
   lastResult: RoundResult | null
   winnerId: string | null
   targetCards: number
+  /** Oldest year allowed in the deck. 0 means no limit. */
+  minYear: number
   /** Where the player in turn put the card, kept face down until the reveal. */
   pendingPlacement: number | null
   /** Blind bids taken so far this round. */
