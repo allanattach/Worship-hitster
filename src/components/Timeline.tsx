@@ -42,6 +42,9 @@ interface TimelineProps {
   /** Share of a short landscape viewport this board may occupy. Lower it where
    * the board shares the screen with more than the mystery card. */
   heightShare?: number
+  /** Tapping a card folds out its details. Omit to render plain tiles. */
+  onSelectCard?: (boardIndex: number) => void
+  selectedCardIndex?: number | null
 }
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
@@ -56,6 +59,8 @@ export function Timeline({
   onResolvedWidth,
   pendingIndex = null,
   heightShare = LANDSCAPE_BOARD_SHARE,
+  onSelectCard,
+  selectedCardIndex = null,
 }: TimelineProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const available = useElementWidth(viewportRef)
@@ -156,7 +161,15 @@ export function Timeline({
                       <span aria-hidden="true">?</span>
                     </div>
                   )}
-                  {card && <CardTile card={card} justPlaced={justPlaced} compact={compact} />}
+                  {card && (
+                    <CardTile
+                      card={card}
+                      justPlaced={justPlaced}
+                      compact={compact}
+                      onSelect={onSelectCard ? () => onSelectCard(gapIndex) : undefined}
+                      selected={selectedCardIndex === gapIndex}
+                    />
+                  )}
                 </div>
               )
             })}

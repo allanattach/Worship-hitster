@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { GameState } from '../types'
 import { eligibleBidders } from '../lib/gameLogic'
 import { findTrack, playTrackUri } from '../lib/spotifyApi'
+import { CardDetails } from './CardDetails'
 import { MysteryCard } from './MysteryCard'
 import { PlayerSwitcher } from './PlayerSwitcher'
 import { CARD_WIDTH_BASE, Timeline } from './Timeline'
@@ -86,6 +87,7 @@ export function GameScreen({
   const [zoom, setZoom] = useState(1)
   const [fit, setFit] = useState(true)
   const [resolvedWidth, setResolvedWidth] = useState(CARD_WIDTH_BASE)
+  const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(null)
   const lastHandledCardId = useRef<string | null>(null)
 
   // Unlock audio while still inside the click, then draw. The play request
@@ -132,6 +134,12 @@ export function GameScreen({
       cancelled = true
     }
   }, [currentCard, state.currentCardRevealed, spotifyConnected, spotifyDeviceId, getValidAccessToken, onAttachMeta])
+
+  // A fold-out belongs to one board in one situation; close it when either moves
+  // on, so it never describes a card that is no longer under it.
+  useEffect(() => {
+    setSelectedCardIndex(null)
+  }, [viewingPlayerIndex, phase])
 
   if (phase === 'gameover' && state.winnerId) {
     const winner = players.find((p) => p.id === state.winnerId)
@@ -189,6 +197,8 @@ export function GameScreen({
         </div>
         <Timeline
           board={viewingPlayer.board}
+          onSelectCard={(index) => setSelectedCardIndex((prev) => (prev === index ? null : index))}
+          selectedCardIndex={selectedCardIndex}
           interactive={boardInteractive}
           onSelectGap={handleGap}
           lastResult={isOwnTurn ? lastResult : null}
@@ -197,6 +207,12 @@ export function GameScreen({
           onResolvedWidth={setResolvedWidth}
           pendingIndex={pendingIndex}
         />
+        {selectedCardIndex !== null && viewingPlayer.board[selectedCardIndex] && (
+          <CardDetails
+            card={viewingPlayer.board[selectedCardIndex]}
+            onClose={() => setSelectedCardIndex(null)}
+          />
+        )}
       </section>
 
       <section className="mystery-section">
