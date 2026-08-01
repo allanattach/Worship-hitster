@@ -711,6 +711,22 @@ img {
   }
 }
 
+/* A card that has been placed but not yet turned over. */
+.card-tile--facedown {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 0.74;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--accent) 0 8px,
+    var(--accent-2) 8px 16px
+  );
+  color: var(--accent-ink);
+  font-size: calc(var(--card-w) * 0.34);
+  font-weight: 750;
+  border-color: var(--accent);
+}
+
 .card-tile-art {
   position: relative;
   aspect-ratio: 1;
@@ -957,6 +973,28 @@ img {
 .challenge-offer-label {
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+.bid-count {
+  font-size: 0.82rem;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.bid-results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+
+.bid-result--won {
+  color: var(--success);
+  font-weight: 620;
 }
 
 .token-btn {

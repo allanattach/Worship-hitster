@@ -1,5 +1,5 @@
 import { SONGS } from '../data/songs'
-import type { GameState, PlacedCard, Player, Song } from '../types'
+import type { GameState, PlacedCard, Player, ResolvedBid, Song } from '../types'
 
 export const TARGET_CARDS = 10
 export const START_TOKENS = 2
@@ -48,7 +48,9 @@ export function createInitialGameState(playerNames: string[]): GameState {
     lastResult: null,
     winnerId: null,
     targetCards: TARGET_CARDS,
-    challengerId: null,
+    pendingPlacement: null,
+    bids: [],
+    activeBidderId: null,
   }
 }
 
@@ -112,94 +114,110 @@ export function validatePlacement(board: PlacedCard[], insertIndex: number, song
   return true
 }
 
-export function placeCard(state: GameState, insertIndex: number): GameState {
-  const song = state.currentCard
-  if (!song) return state
-  const player = state.players[state.currentPlayerIndex]
-  const correct = validatePlacement(player.board, insertIndex, song)
-
-  const players = state.players.map((p, idx) => {
-    if (idx !== state.currentPlayerIndex || !correct) return p
-    const board = [...p.board]
-    board.splice(insertIndex, 0, song)
-    return { ...p, board }
-  })
-
-  const updatedPlayer = players[state.currentPlayerIndex]
-  const won = correct && updatedPlayer.board.length >= state.targetCards
-
-  return {
-    ...state,
-    players,
-    // A wrongly placed card is not discarded yet: another player may still bid
-    // in and claim it. advanceTurn discards whatever nobody took.
-    currentCard: song,
-    currentCardRevealed: true,
-    lastResult: { correct, song, insertIndex },
-    phase: won ? 'gameover' : 'reveal',
-    winnerId: won ? updatedPlayer.id : null,
-  }
+/** Records where the player in turn put the card, without revealing anything.
+ * The card stays face down so the others can bid blind. */
+export function commitPlacement(state: GameState, insertIndex: number): GameState {
+  if (state.phase !== 'placing' || !state.currentCard) return state
+  return { ...state, pendingPlacement: insertIndex, phase: 'bidding' }
 }
 
-/** Players other than the one in turn who could still bid in on this card. */
-export function eligibleChallengers(state: GameState): Player[] {
-  if (state.phase !== 'reveal') return []
-  const result = state.lastResult
-  if (!result || result.correct || result.challengerId) return []
+/** Players who could still bid in this round: everyone except the player in
+ * turn, who holds a token and has not already bid. */
+export function eligibleBidders(state: GameState): Player[] {
+  if (state.phase !== 'bidding') return []
   const current = state.players[state.currentPlayerIndex]
-  return state.players.filter((p) => p.id !== current.id && p.tokens > 0)
+  return state.players.filter(
+    (p) => p.id !== current.id && p.tokens > 0 && !state.bids.some((b) => b.playerId === p.id),
+  )
 }
 
-/** Spends a token to let `playerId` try to claim the card the player in turn
- * placed wrongly. */
-export function beginChallenge(state: GameState, playerId: string): GameState {
-  if (!eligibleChallengers(state).some((p) => p.id === playerId)) return state
-  const index = state.players.findIndex((p) => p.id === playerId)
+/** Takes the token up front and hands the bidder their own board to place on. */
+export function startBid(state: GameState, playerId: string): GameState {
+  if (!eligibleBidders(state).some((p) => p.id === playerId)) return state
   return {
     ...state,
     players: state.players.map((p) => (p.id === playerId ? { ...p, tokens: p.tokens - 1 } : p)),
-    challengerId: playerId,
-    viewingPlayerIndex: index,
-    phase: 'challenge',
+    activeBidderId: playerId,
+    viewingPlayerIndex: state.players.findIndex((p) => p.id === playerId),
+    phase: 'bidPlacing',
   }
 }
 
-export function cancelChallenge(state: GameState): GameState {
-  if (state.phase !== 'challenge' || !state.challengerId) return state
-  // Hand the token back, since nothing was staked in the end.
+export function cancelBid(state: GameState): GameState {
+  if (state.phase !== 'bidPlacing' || !state.activeBidderId) return state
   return {
     ...state,
-    players: state.players.map((p) => (p.id === state.challengerId ? { ...p, tokens: p.tokens + 1 } : p)),
-    challengerId: null,
+    players: state.players.map((p) =>
+      p.id === state.activeBidderId ? { ...p, tokens: p.tokens + 1 } : p,
+    ),
+    activeBidderId: null,
     viewingPlayerIndex: state.currentPlayerIndex,
-    phase: 'reveal',
+    phase: 'bidding',
   }
 }
 
-export function resolveChallenge(state: GameState, insertIndex: number): GameState {
+export function commitBid(state: GameState, insertIndex: number): GameState {
+  if (state.phase !== 'bidPlacing' || !state.activeBidderId) return state
+  return {
+    ...state,
+    bids: [...state.bids, { playerId: state.activeBidderId, insertIndex }],
+    activeBidderId: null,
+    viewingPlayerIndex: state.currentPlayerIndex,
+    phase: 'bidding',
+  }
+}
+
+/**
+ * Turns the card face up and settles every placement at once.
+ *
+ * The player in turn is checked first. Only if they were wrong can a bid take
+ * the card, and then the earliest correct bid wins it. Tokens were already
+ * spent when bidding, so a losing bid simply keeps nothing.
+ */
+export function revealRound(state: GameState): GameState {
   const song = state.currentCard
-  if (state.phase !== 'challenge' || !song || !state.challengerId) return state
-  const challengerIndex = state.players.findIndex((p) => p.id === state.challengerId)
-  if (challengerIndex < 0) return state
+  if (state.phase !== 'bidding' || !song || state.pendingPlacement === null) return state
 
-  const challenger = state.players[challengerIndex]
-  const correct = validatePlacement(challenger.board, insertIndex, song)
+  const currentPlayer = state.players[state.currentPlayerIndex]
+  const insertIndex = state.pendingPlacement
+  const correct = validatePlacement(currentPlayer.board, insertIndex, song)
 
-  const players = state.players.map((p, idx) => {
-    if (idx !== challengerIndex || !correct) return p
+  const resolvedBids: ResolvedBid[] = state.bids.map((bid) => {
+    const bidder = state.players.find((p) => p.id === bid.playerId)
+    return {
+      ...bid,
+      correct: !!bidder && validatePlacement(bidder.board, bid.insertIndex, song),
+    }
+  })
+
+  const winningBid = correct ? undefined : resolvedBids.find((b) => b.correct)
+  const takerId = correct ? currentPlayer.id : winningBid?.playerId
+
+  const players = state.players.map((p) => {
+    if (p.id !== takerId) return p
+    const at = correct ? insertIndex : winningBid!.insertIndex
     const board = [...p.board]
-    board.splice(insertIndex, 0, song)
+    board.splice(at, 0, song)
     return { ...p, board }
   })
 
-  const won = correct && players[challengerIndex].board.length >= state.targetCards
+  const taker = players.find((p) => p.id === takerId)
+  const won = !!taker && taker.board.length >= state.targetCards
 
   return {
     ...state,
     players,
-    lastResult: { ...state.lastResult!, challengerId: state.challengerId, challengerCorrect: correct },
+    currentCardRevealed: true,
+    pendingPlacement: null,
+    lastResult: {
+      song,
+      correct,
+      insertIndex,
+      bids: resolvedBids,
+      wonByBidderId: winningBid?.playerId,
+    },
     phase: won ? 'gameover' : 'reveal',
-    winnerId: won ? players[challengerIndex].id : null,
+    winnerId: won ? taker!.id : null,
   }
 }
 
@@ -219,7 +237,7 @@ export function awardToken(state: GameState): GameState {
 export function advanceTurn(state: GameState): GameState {
   if (state.phase === 'gameover') return state
   const result = state.lastResult
-  const unclaimed = result && !result.correct && !result.challengerCorrect ? result.song : null
+  const unclaimed = result && !result.correct && !result.wonByBidderId ? result.song : null
   const nextIndex = (state.currentPlayerIndex + 1) % state.players.length
   return {
     ...state,
@@ -229,7 +247,9 @@ export function advanceTurn(state: GameState): GameState {
     currentCard: null,
     currentCardRevealed: false,
     lastResult: null,
-    challengerId: null,
+    pendingPlacement: null,
+    bids: [],
+    activeBidderId: null,
     phase: 'playing',
   }
 }

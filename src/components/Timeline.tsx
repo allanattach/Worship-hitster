@@ -25,6 +25,9 @@ interface TimelineProps {
   fit?: boolean
   /** Reports the card width actually used, so zoom can continue from it. */
   onResolvedWidth?: (width: number) => void
+  /** Slot holding a card that has been placed but not yet turned over. Shown
+   * face down so everyone can see where it went without seeing what it is. */
+  pendingIndex?: number | null
 }
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
@@ -37,24 +40,27 @@ export function Timeline({
   zoom = 1,
   fit = true,
   onResolvedWidth,
+  pendingIndex = null,
 }: TimelineProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const available = useElementWidth(viewportRef)
 
   const gapCount = board.length + 1
+  // A face-down card occupies a slot of its own, so it counts toward the fit.
+  const cardCount = board.length + (pendingIndex !== null ? 1 : 0)
   const kind = interactive ? 'interactive' : 'static'
   // Trailing slack absorbs sub-pixel rounding and any scrollbar gutter.
-  const chromeFor = (gap: number) => gapCount * gap + (gapCount + board.length) * ROW_GAP + 14
+  const chromeFor = (gap: number) => gapCount * gap + (gapCount + cardCount) * ROW_GAP + 14
 
   let gapWidth = GAP_PREFERRED[kind]
   let cardWidth: number
 
-  if (fit && available > 0 && board.length > 0) {
-    cardWidth = Math.floor((available - chromeFor(gapWidth)) / board.length)
+  if (fit && available > 0 && cardCount > 0) {
+    cardWidth = Math.floor((available - chromeFor(gapWidth)) / cardCount)
     if (cardWidth < CARD_WIDTH_BASE) {
       // Buy back card width from the gaps before shrinking cards any further.
       gapWidth = GAP_MIN[kind]
-      cardWidth = Math.floor((available - chromeFor(gapWidth)) / board.length)
+      cardWidth = Math.floor((available - chromeFor(gapWidth)) / cardCount)
     }
   } else {
     cardWidth = CARD_WIDTH_BASE * zoom
@@ -63,8 +69,7 @@ export function Timeline({
   cardWidth = clamp(cardWidth, CARD_WIDTH_MIN, CARD_WIDTH_MAX)
   const compact = cardWidth < COMPACT_BELOW
 
-  const contentWidth =
-    board.length * cardWidth + gapCount * gapWidth + (gapCount + board.length) * ROW_GAP
+  const contentWidth = cardCount * cardWidth + gapCount * gapWidth + (gapCount + cardCount) * ROW_GAP
   const overflowing = available > 0 && contentWidth > available + 1
 
   useEffect(() => {
@@ -96,6 +101,11 @@ export function Timeline({
                 </button>
               ) : (
                 <div className="timeline-gap timeline-gap--static" aria-hidden="true" />
+              )}
+              {pendingIndex === gapIndex && (
+                <div className="card-tile card-tile--facedown" aria-label="Placeret kort, endnu ikke vendt">
+                  <span aria-hidden="true">?</span>
+                </div>
               )}
               {card && <CardTile card={card} justPlaced={justPlaced} compact={compact} />}
             </div>

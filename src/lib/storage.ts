@@ -35,7 +35,9 @@ export function loadGameState(): GameState | null {
   if (!saved) return null
   return {
     ...saved,
-    challengerId: saved.challengerId ?? null,
+    pendingPlacement: saved.pendingPlacement ?? null,
+    bids: saved.bids ?? [],
+    activeBidderId: saved.activeBidderId ?? null,
     players: (saved.players ?? []).map((player) => ({
       ...player,
       tokens: typeof player.tokens === 'number' ? player.tokens : START_TOKENS,

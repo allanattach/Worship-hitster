@@ -24,14 +24,23 @@ export function RulesModal({ onClose }: RulesModalProps) {
               Uden at kende titel, kunstner eller årstal skal du placere sangen på din tidslinje, dér hvor du tror den
               hører til kronologisk i forhold til dine andre kort.
             </li>
-            <li>Bekræft placeringen – kortet vendes, og du ser om du gættede rigtigt.</li>
-            <li>Gættede du rigtigt, bliver kortet på dit bræt.</li>
             <li>
-              Gættede du <strong>forkert</strong>, kan de andre spillere <strong>byde ind</strong>: den der tror at
-              vide hvornår sangen er fra, betaler én brik og placerer kortet på sin egen tidslinje. Rammer man
-              rigtigt, vindes kortet – ellers er brikken tabt.
+              Kortet lægges med <strong>bagsiden op</strong> på pladsen. Ingen har endnu set årstallet.
             </li>
-            <li>Turen går videre til næste spiller. Et kort ingen vandt, kasseres.</li>
+            <li>
+              Nu kan de andre <strong>byde ind</strong>: den der tror at vide hvornår sangen er fra, betaler én brik
+              og placerer kortet på sin egen tidslinje – også med bagsiden op. Buddet er altså et blindt gæt, præcis
+              som for spilleren i tur. Flere kan byde ind i samme runde.
+            </li>
+            <li>
+              Når alle har budt, trykkes <strong>Vend kortet</strong>. Først da afsløres årstal, titel og kunstner, og
+              alle placeringer afgøres på én gang.
+            </li>
+            <li>
+              Ramte spilleren i tur rigtigt, beholder de kortet. Ramte de forkert, vinder det første rigtige bud
+              kortet. Et forkert bud koster brikken. Vandt ingen kortet, kasseres det.
+            </li>
+            <li>Turen går videre til næste spiller.</li>
             <li>
               Kan sangen ikke afspilles – eller findes den ikke på Spotify – så tryk <strong>Nyt kort</strong>. Du
               får en ny sang uden at miste turen, og det tælles ikke som en fejl.

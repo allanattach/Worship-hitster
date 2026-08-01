@@ -26,16 +26,39 @@ export interface Player {
   tokens: number
 }
 
-export type GamePhase = 'setup' | 'playing' | 'placing' | 'reveal' | 'challenge' | 'gameover'
+/**
+ * A round runs: playing → placing → bidding (⇄ bidPlacing) → reveal.
+ *
+ * Nothing about the song is shown until `reveal`. Bids are placed blind, which
+ * is the whole point — seeing the year first would make bidding free.
+ */
+export type GamePhase =
+  | 'setup'
+  | 'playing'
+  | 'placing'
+  | 'bidding'
+  | 'bidPlacing'
+  | 'reveal'
+  | 'gameover'
+
+/** Another player's blind guess at where the card belongs on their own board. */
+export interface Bid {
+  playerId: string
+  insertIndex: number
+}
+
+export interface ResolvedBid extends Bid {
+  correct: boolean
+}
 
 export interface RoundResult {
-  correct: boolean
   song: PlacedCard
+  /** Whether the player in turn placed it correctly. */
+  correct: boolean
   insertIndex: number
-  /** Set when the card was claimed by a player bidding in rather than by the
-   * player whose turn it was. */
-  challengerId?: string
-  challengerCorrect?: boolean
+  bids: ResolvedBid[]
+  /** The bidder who ended up taking the card, if any. */
+  wonByBidderId?: string
   /** Guards the once-per-round token award from being claimed twice. */
   tokenAwarded?: boolean
 }
@@ -52,8 +75,12 @@ export interface GameState {
   lastResult: RoundResult | null
   winnerId: string | null
   targetCards: number
-  /** Player currently bidding in on the card, during the challenge phase. */
-  challengerId: string | null
+  /** Where the player in turn put the card, kept face down until the reveal. */
+  pendingPlacement: number | null
+  /** Blind bids taken so far this round. */
+  bids: Bid[]
+  /** The player currently choosing a slot for their bid. */
+  activeBidderId: string | null
 }
 
 export interface SpotifyTokens {

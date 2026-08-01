@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { GameState } from '../types'
-import { eligibleChallengers } from '../lib/gameLogic'
+import { eligibleBidders } from '../lib/gameLogic'
 import { findTrack, playTrackUri } from '../lib/spotifyApi'
 import { MysteryCard } from './MysteryCard'
 import { PlayerSwitcher } from './PlayerSwitcher'
@@ -18,9 +18,10 @@ interface GameScreenProps {
   onViewPlayer: (index: number) => void
   onNewGame: () => void
   onClaimToken: () => void
-  onStartChallenge: (playerId: string) => void
-  onAbortChallenge: () => void
-  onSettleChallenge: (insertIndex: number) => void
+  onReveal: () => void
+  onStartBid: (playerId: string) => void
+  onCancelBid: () => void
+  onPlaceBid: (insertIndex: number) => void
   spotifyConnected: boolean
   getValidAccessToken: () => Promise<string | null>
   spotifyDeviceId: string | null
@@ -41,9 +42,10 @@ export function GameScreen({
   onViewPlayer,
   onNewGame,
   onClaimToken,
-  onStartChallenge,
-  onAbortChallenge,
-  onSettleChallenge,
+  onReveal,
+  onStartBid,
+  onCancelBid,
+  onPlaceBid,
   spotifyConnected,
   getValidAccessToken,
   spotifyDeviceId,
@@ -57,14 +59,21 @@ export function GameScreen({
   const currentPlayer = players[currentPlayerIndex]
   const viewingPlayer = players[viewingPlayerIndex]
   const isOwnTurn = viewingPlayerIndex === currentPlayerIndex
-  const challenger = players.find((p) => p.id === state.challengerId) ?? null
-  const challengers = eligibleChallengers(state)
+  const activeBidder = players.find((p) => p.id === state.activeBidderId) ?? null
+  const bidders = eligibleBidders(state)
 
-  // During a challenge the board being shown belongs to the bidder, and it is
-  // their placement that the taps resolve.
-  const isChallengerBoard = phase === 'challenge' && challenger?.id === viewingPlayer.id
-  const boardInteractive = (isOwnTurn && phase === 'placing') || isChallengerBoard
-  const handleGap = isChallengerBoard ? onSettleChallenge : onPlace
+  // While a bid is being placed, the board on screen belongs to the bidder and
+  // it is their guess the taps record.
+  const isBidderBoard = phase === 'bidPlacing' && activeBidder?.id === viewingPlayer.id
+  const boardInteractive = (isOwnTurn && phase === 'placing') || isBidderBoard
+  const handleGap = isBidderBoard ? onPlaceBid : onPlace
+
+  // Face-down markers: the player in turn has a hidden placement from the
+  // moment they commit, and each bidder has one once they have bid.
+  const pendingIndex =
+    isOwnTurn && state.pendingPlacement !== null && (phase === 'bidding' || phase === 'bidPlacing')
+      ? state.pendingPlacement
+      : (state.bids.find((b) => b.playerId === viewingPlayer.id)?.insertIndex ?? null)
   const [trackError, setTrackError] = useState<string | null>(null)
   const [zoom, setZoom] = useState(1)
   const [fit, setFit] = useState(true)
@@ -146,7 +155,7 @@ export function GameScreen({
       <section className="board-section">
         <div className="board-header">
           <h3 className="board-heading">
-            {isChallengerBoard ? `${viewingPlayer.name}s tidslinje – byder ind` : `${viewingPlayer.name}s tidslinje`}
+            {isBidderBoard ? `${viewingPlayer.name}s tidslinje – byder ind` : `${viewingPlayer.name}s tidslinje`}
             <span className="board-count">
               {viewingPlayer.board.length} / {targetCards}
             </span>
@@ -167,6 +176,7 @@ export function GameScreen({
           zoom={zoom}
           fit={fit}
           onResolvedWidth={setResolvedWidth}
+          pendingIndex={pendingIndex}
         />
       </section>
 
@@ -176,8 +186,10 @@ export function GameScreen({
           currentCard={currentCard}
           lastResult={lastResult}
           currentPlayerName={currentPlayer.name}
-          challenger={challenger}
-          challengers={challengers}
+          players={players}
+          activeBidder={activeBidder}
+          bidders={bidders}
+          bidCount={state.bids.length}
           spotifyConnected={spotifyConnected}
           spotifyReady={spotifyReady}
           isPaused={isPaused}
@@ -186,10 +198,11 @@ export function GameScreen({
           onDraw={handleDraw}
           onTogglePlay={togglePlay}
           onRedraw={handleRedraw}
+          onReveal={onReveal}
           onNext={onNext}
           onClaimToken={onClaimToken}
-          onStartChallenge={onStartChallenge}
-          onAbortChallenge={onAbortChallenge}
+          onStartBid={onStartBid}
+          onCancelBid={onCancelBid}
         />
       </section>
     </div>

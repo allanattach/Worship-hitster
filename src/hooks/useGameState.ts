@@ -3,14 +3,15 @@ import {
   advanceTurn,
   attachTrackMeta,
   awardToken,
-  beginChallenge,
-  cancelChallenge,
+  cancelBid,
+  commitBid,
+  commitPlacement,
   createInitialGameState,
   drawNextCard,
-  placeCard,
   redrawCard,
-  resolveChallenge,
+  revealRound,
   setViewingPlayer,
+  startBid,
 } from '../lib/gameLogic'
 import { clearGameState, loadGameState, saveGameState } from '../lib/storage'
 import type { GameState } from '../types'
@@ -31,7 +32,9 @@ const SETUP_STATE: GameState = {
   lastResult: null,
   winnerId: null,
   targetCards: 10,
-  challengerId: null,
+  pendingPlacement: null,
+  bids: [],
+  activeBidderId: null,
 }
 
 /** Current state plus the snapshots undo can step back through. Kept in one
@@ -92,15 +95,13 @@ export function useGameState() {
 
   const draw = useCallback(() => commit(drawNextCard), [commit])
   const redraw = useCallback(() => commit(redrawCard), [commit])
-  const place = useCallback((insertIndex: number) => commit((s) => placeCard(s, insertIndex)), [commit])
+  const place = useCallback((insertIndex: number) => commit((s) => commitPlacement(s, insertIndex)), [commit])
   const next = useCallback(() => commit(advanceTurn), [commit])
   const claimToken = useCallback(() => commit(awardToken), [commit])
-  const startChallenge = useCallback((playerId: string) => commit((s) => beginChallenge(s, playerId)), [commit])
-  const abortChallenge = useCallback(() => commit(cancelChallenge), [commit])
-  const settleChallenge = useCallback(
-    (insertIndex: number) => commit((s) => resolveChallenge(s, insertIndex)),
-    [commit],
-  )
+  const reveal = useCallback(() => commit(revealRound), [commit])
+  const bidStart = useCallback((playerId: string) => commit((s) => startBid(s, playerId)), [commit])
+  const bidCancel = useCallback(() => commit(cancelBid), [commit])
+  const bidPlace = useCallback((insertIndex: number) => commit((s) => commitBid(s, insertIndex)), [commit])
 
   // Cover art arrives from Spotify, not from a player, so it is not a move.
   const attachMeta = useCallback(
@@ -124,9 +125,10 @@ export function useGameState() {
     place,
     next,
     claimToken,
-    startChallenge,
-    abortChallenge,
-    settleChallenge,
+    reveal,
+    bidStart,
+    bidCancel,
+    bidPlace,
     viewPlayer,
     resetGame,
   }

@@ -24,9 +24,10 @@ function App() {
     place,
     next,
     claimToken,
-    startChallenge,
-    abortChallenge,
-    settleChallenge,
+    reveal,
+    bidStart,
+    bidCancel,
+    bidPlace,
     viewPlayer,
     resetGame,
   } = useGameState()
@@ -77,9 +78,10 @@ function App() {
             onViewPlayer={viewPlayer}
             onNewGame={handleNewGame}
             onClaimToken={claimToken}
-            onStartChallenge={startChallenge}
-            onAbortChallenge={abortChallenge}
-            onSettleChallenge={settleChallenge}
+            onReveal={reveal}
+            onStartBid={bidStart}
+            onCancelBid={bidCancel}
+            onPlaceBid={bidPlace}
             spotifyConnected={spotifyAuth.connected}
             getValidAccessToken={spotifyAuth.getValidAccessToken}
             spotifyDeviceId={spotifyPlayer.deviceId}
