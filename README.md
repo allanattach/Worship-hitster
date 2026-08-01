@@ -3,6 +3,8 @@
 En standalone webapp der simulerer Hitster med kristne sange – salmer, gospel,
 CCM, lovsang, pop og rock i stedet for de klassiske Hitster-numre.
 
+**Spil den her: <https://allanattach.github.io/Worship-hitster/>**
+
 ## Sådan spilles
 
 Hver spiller starter med ét kort på sin tidslinje. På sin tur afspilles en
@@ -28,11 +30,20 @@ Spillet afspiller sange via Spotifys Web Playback SDK, hvilket kræver en
 Spotify Premium-konto samt din egen Spotify-app:
 
 1. Opret en gratis app på [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
-2. Tilføj den Redirect URI som vises i appens opsætningsskærm (typisk
-   `http://localhost:5173/` i udvikling, eller din deploy-URL i produktion)
+2. Tilføj den Redirect URI som vises i appens opsætningsskærm. Appen viser
+   altid den korrekte URI for den adresse du spiller fra:
+   - `https://allanattach.github.io/Worship-hitster/` for den deployede version
+   - `http://localhost:5173/` når du kører lokalt med `npm run dev`
 3. Indsæt appens Client ID i "Forbind til Spotify"-feltet i spillet
 
 Uden en Spotify-forbindelse kan spillet stadig spilles – blot uden lyd.
+
+## Deployment
+
+Appen deployes automatisk til GitHub Pages af
+`.github/workflows/deploy.yml` ved hvert push til default-branchen. Vite er
+konfigureret med `base: './'`, så bygget virker både fra en domænerod og fra
+et repo-subpath.
 
 ## Udvikling
 
