@@ -620,13 +620,27 @@ img {
   mask-image: linear-gradient(to right, #000 calc(100% - 26px), transparent);
 }
 
+/* A column of rows. With few cards there is one row and this behaves as a
+   single line; past a handful the cards are split across two rows, which the
+   component decides so the split comes out even. */
 .timeline {
   display: flex;
-  align-items: stretch;
-  gap: 2px;
+  flex-direction: column;
+  gap: 10px;
   min-height: calc(var(--card-w) * 1.36);
   width: max-content;
   min-width: 100%;
+}
+
+.timeline--wrap {
+  min-height: 0;
+}
+
+.timeline-row {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
 .timeline-slot {
