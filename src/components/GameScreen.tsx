@@ -161,16 +161,6 @@ export function GameScreen({
 
   return (
     <div className="game-screen">
-      <div className="turn-banner">
-        <span className="turn-banner-label">Nu er det</span>
-        <span className="turn-banner-name">{currentPlayer.name}s tur</span>
-        {!isOwnTurn && (
-          <button type="button" className="viewing-badge" onClick={() => onViewPlayer(currentPlayerIndex)}>
-            Du kigger på {viewingPlayer.name}s bræt – tilbage til {currentPlayer.name}
-          </button>
-        )}
-      </div>
-
       <PlayerSwitcher
         players={players}
         currentPlayerIndex={currentPlayerIndex}
@@ -216,6 +206,16 @@ export function GameScreen({
       </section>
 
       <section className="mystery-section">
+        <div className="turn-banner">
+          <span className="turn-banner-label">Nu er det</span>
+          <span className="turn-banner-name">{currentPlayer.name}s tur</span>
+          {!isOwnTurn && (
+            <button type="button" className="viewing-badge" onClick={() => onViewPlayer(currentPlayerIndex)}>
+              Du kigger på {viewingPlayer.name}s bræt – tilbage til {currentPlayer.name}
+            </button>
+          )}
+        </div>
+
         <MysteryCard
           phase={phase}
           currentCard={currentCard}

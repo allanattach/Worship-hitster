@@ -18,7 +18,7 @@ const WRAP_ABOVE = 5
 const WRAP_ROW_GAP = 10
 /** Share of a short landscape viewport the board may take, leaving room for the
  * turn banner, the switcher and the mystery card without scrolling. */
-const LANDSCAPE_BOARD_SHARE = 0.44
+const LANDSCAPE_BOARD_SHARE = 0.52
 
 // Insertion gaps must stay tappable, but eleven of them at full width eat more
 // room than the cards do, so they shrink first when space runs short.
