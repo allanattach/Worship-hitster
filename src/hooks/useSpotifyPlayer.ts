@@ -88,5 +88,15 @@ export function useSpotifyPlayer(connected: boolean, getAccessToken: () => Promi
     togglePlay: () => playerRef.current?.togglePlay(),
     pause: () => playerRef.current?.pause(),
     resume: () => playerRef.current?.resume(),
+    /** Call from a click handler before starting playback. Mobile browsers
+     * refuse to output audio that was not unlocked by a user gesture, and the
+     * actual play request happens several async hops later. */
+    activateElement: async () => {
+      try {
+        await playerRef.current?.activateElement?.()
+      } catch {
+        // Older desktop SDK builds lack this; playback works without it.
+      }
+    },
   }
 }

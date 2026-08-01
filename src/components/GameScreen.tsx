@@ -20,6 +20,7 @@ interface GameScreenProps {
   isPaused: boolean
   playbackError: string | null
   togglePlay: () => void
+  activateElement: () => Promise<void>
 }
 
 export function GameScreen({
@@ -36,6 +37,7 @@ export function GameScreen({
   isPaused,
   playbackError,
   togglePlay,
+  activateElement,
 }: GameScreenProps) {
   const { players, currentPlayerIndex, viewingPlayerIndex, phase, currentCard, lastResult, targetCards } = state
   const currentPlayer = players[currentPlayerIndex]
@@ -44,7 +46,11 @@ export function GameScreen({
   const [trackError, setTrackError] = useState<string | null>(null)
   const lastPlayedCardId = useRef<string | null>(null)
 
+  // Unlock audio while we are still inside the click event, then draw. The
+  // play request itself fires from an effect a few async hops later, which
+  // mobile browsers would otherwise treat as autoplay and silently block.
   const handleDraw = () => {
+    if (spotifyConnected) void activateElement()
     onDraw()
   }
 

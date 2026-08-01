@@ -63,6 +63,7 @@ function App() {
             isPaused={spotifyPlayer.isPaused}
             playbackError={spotifyPlayer.playbackError}
             togglePlay={spotifyPlayer.togglePlay}
+            activateElement={spotifyPlayer.activateElement}
           />
         )}
       </main>
