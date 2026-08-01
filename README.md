@@ -1,7 +1,7 @@
 # Worship Hitster
 
 En standalone webapp der simulerer Hitster med kristne sange – salmer, gospel,
-CCM, lovsang, pop og rock i stedet for de klassiske Hitster-numre...
+CCM, lovsang, pop og rock i stedet for de klassiske Hitster-numre.
 
 **Spil den her: <https://allanattach.github.io/Worship-hitster/>**
 
