@@ -2,26 +2,35 @@ import type { Song } from '../types'
 
 /**
  * Curated pool of Christian songs across eras and genres: hymns, gospel,
- * CCM, modern worship, Christian rock and pop. Years reflect original
- * writing/release year, giving the timeline gameplay a wide spread.
+ * CCM, modern worship, Christian rock and pop.
+ *
+ * The year follows Hitster's own rule: the year the song was first released or
+ * performed in public *in its original form*. So it is never the year of the
+ * recording that happens to play, and never a cover or a later translation —
+ * for a hymn it is the original text, whatever language that was in. A few of
+ * the oldest datings are scholarly estimates rather than exact years, which is
+ * harmless here since nothing else sits near them on the timeline.
  *
  * `traditional: true` marks songs credited to their author rather than to a
  * recording artist, so Spotify gets searched by title alone — see findTrack.
  */
 export const SONGS: Song[] = [
-  // ---------- Hymns and traditional (year = original text) ----------
+  // ---------- Hymns and traditional (year = the original text) ----------
   { id: 'of-the-fathers-love', title: "Of the Father's Love Begotten", artist: 'Aurelius Prudentius', year: 405, genre: 'hymn', traditional: true },
+  { id: 'be-thou-my-vision', title: 'Be Thou My Vision', artist: 'Irsk hymne, ca. 8. årh.', year: 750, genre: 'hymn', traditional: true },
   { id: 'all-creatures', title: 'All Creatures of Our God and King', artist: 'Francis of Assisi', year: 1225, genre: 'hymn', traditional: true },
+  { id: 'o-sacred-head', title: 'O Sacred Head, Now Wounded', artist: 'Arnulf af Leuven', year: 1250, genre: 'hymn', traditional: true },
   { id: 'mighty-fortress', title: 'A Mighty Fortress Is Our God', artist: 'Martin Luther', year: 1529, genre: 'hymn', traditional: true },
   { id: 'now-thank-we-all', title: 'Now Thank We All Our God', artist: 'Martin Rinkart', year: 1636, genre: 'hymn', traditional: true },
-  { id: 'o-sacred-head', title: 'O Sacred Head, Now Wounded', artist: 'Paul Gerhardt', year: 1656, genre: 'hymn', traditional: true },
   { id: 'praise-to-the-lord', title: 'Praise to the Lord, the Almighty', artist: 'Joachim Neander', year: 1680, genre: 'hymn', traditional: true },
   { id: 'when-i-survey', title: 'When I Survey the Wondrous Cross', artist: 'Isaac Watts', year: 1707, genre: 'hymn', traditional: true },
+  { id: 'o-come-o-come-emmanuel', title: 'O Come, O Come, Emmanuel', artist: 'Latinsk hymne', year: 1710, genre: 'hymn', traditional: true },
   { id: 'joy-to-the-world', title: 'Joy to the World', artist: 'Isaac Watts', year: 1719, genre: 'hymn', traditional: true },
   { id: 'and-can-it-be', title: 'And Can It Be That I Should Gain', artist: 'Charles Wesley', year: 1738, genre: 'hymn', traditional: true },
   { id: 'o-for-a-thousand-tongues', title: 'O for a Thousand Tongues to Sing', artist: 'Charles Wesley', year: 1739, genre: 'hymn', traditional: true },
   { id: 'hark-the-herald', title: 'Hark! The Herald Angels Sing', artist: 'Charles Wesley', year: 1739, genre: 'hymn', traditional: true },
   { id: 'christ-the-lord-is-risen', title: 'Christ the Lord Is Risen Today', artist: 'Charles Wesley', year: 1739, genre: 'hymn', traditional: true },
+  { id: 'o-come-all-ye-faithful', title: 'O Come, All Ye Faithful', artist: 'John Francis Wade', year: 1743, genre: 'hymn', traditional: true },
   { id: 'come-thou-long-expected', title: 'Come, Thou Long Expected Jesus', artist: 'Charles Wesley', year: 1744, genre: 'hymn', traditional: true },
   { id: 'guide-me-o-thou-great-jehovah', title: 'Guide Me, O Thou Great Jehovah', artist: 'William Williams', year: 1745, genre: 'hymn', traditional: true },
   { id: 'be-still-my-soul', title: 'Be Still, My Soul', artist: 'Katharina von Schlegel', year: 1752, genre: 'hymn', traditional: true },
@@ -32,11 +41,9 @@ export const SONGS: Song[] = [
   { id: 'holy-holy-holy', title: 'Holy, Holy, Holy', artist: 'Reginald Heber', year: 1826, genre: 'hymn', traditional: true },
   { id: 'my-faith-looks-up-to-thee', title: 'My Faith Looks Up to Thee', artist: 'Ray Palmer', year: 1830, genre: 'hymn', traditional: true },
   { id: 'just-as-i-am', title: 'Just As I Am', artist: 'Charlotte Elliott', year: 1835, genre: 'hymn', traditional: true },
-  { id: 'o-come-all-ye-faithful', title: 'O Come, All Ye Faithful', artist: 'John Francis Wade', year: 1841, genre: 'hymn', traditional: true },
   { id: 'nearer-my-god-to-thee', title: 'Nearer, My God, to Thee', artist: 'Sarah Flower Adams', year: 1841, genre: 'hymn', traditional: true },
   { id: 'abide-with-me', title: 'Abide with Me', artist: 'Henry Francis Lyte', year: 1847, genre: 'hymn', traditional: true },
   { id: 'crown-him-with-many-crowns', title: 'Crown Him with Many Crowns', artist: 'Matthew Bridges', year: 1851, genre: 'hymn', traditional: true },
-  { id: 'o-come-o-come-emmanuel', title: 'O Come, O Come, Emmanuel', artist: 'John Mason Neale', year: 1851, genre: 'hymn', traditional: true },
   { id: 'what-a-friend', title: 'What a Friend We Have in Jesus', artist: 'Joseph Scriven', year: 1855, genre: 'hymn', traditional: true },
   { id: 'before-the-throne', title: 'Before the Throne of God Above', artist: 'Charitie Lees Bancroft', year: 1863, genre: 'hymn', traditional: true },
   { id: 'the-churchs-one-foundation', title: "The Church's One Foundation", artist: 'Samuel J. Stone', year: 1866, genre: 'hymn', traditional: true },
@@ -45,16 +52,15 @@ export const SONGS: Song[] = [
   { id: 'take-my-life-and-let-it-be', title: 'Take My Life and Let It Be', artist: 'Frances Havergal', year: 1874, genre: 'hymn', traditional: true },
   { id: 'it-is-well', title: 'It Is Well with My Soul', artist: 'Horatio Spafford', year: 1876, genre: 'hymn', traditional: true },
   { id: 'softly-and-tenderly', title: 'Softly and Tenderly Jesus Is Calling', artist: 'Will L. Thompson', year: 1880, genre: 'hymn', traditional: true },
+  { id: 'how-great-thou-art', title: 'How Great Thou Art', artist: 'Carl Boberg', year: 1885, genre: 'hymn', traditional: true },
   { id: 'standing-on-the-promises', title: 'Standing on the Promises', artist: 'R. Kelso Carter', year: 1886, genre: 'hymn', traditional: true },
   { id: 'trust-and-obey', title: 'Trust and Obey', artist: 'John H. Sammis', year: 1887, genre: 'hymn', traditional: true },
   { id: 'leaning-on-the-everlasting-arms', title: 'Leaning on the Everlasting Arms', artist: 'Elisha Hoffman', year: 1887, genre: 'hymn', traditional: true },
   { id: 'his-eye-is-on-the-sparrow', title: 'His Eye Is on the Sparrow', artist: 'Civilla Martin', year: 1905, genre: 'gospel', traditional: true },
-  { id: 'be-thou-my-vision', title: 'Be Thou My Vision', artist: 'Eleanor Hull', year: 1912, genre: 'hymn', traditional: true },
   { id: 'in-the-garden', title: 'In the Garden', artist: 'C. Austin Miles', year: 1912, genre: 'hymn', traditional: true },
   { id: 'the-old-rugged-cross', title: 'The Old Rugged Cross', artist: 'George Bennard', year: 1913, genre: 'hymn', traditional: true },
   { id: 'turn-your-eyes', title: 'Turn Your Eyes Upon Jesus', artist: 'Helen Lemmel', year: 1922, genre: 'hymn', traditional: true },
   { id: 'great-is-thy-faithfulness', title: 'Great Is Thy Faithfulness', artist: 'Thomas Chisholm', year: 1923, genre: 'hymn', traditional: true },
-  { id: 'how-great-thou-art', title: 'How Great Thou Art', artist: 'Stuart K. Hine', year: 1949, genre: 'hymn', traditional: true },
 
   // ---------- Gospel ----------
   { id: 'ill-fly-away', title: "I'll Fly Away", artist: 'Albert E. Brumley', year: 1929, genre: 'gospel', traditional: true },
@@ -176,7 +182,7 @@ export const SONGS: Song[] = [
   { id: 'hero', title: 'Hero', artist: 'Skillet', year: 2009, genre: 'rock' },
   { id: 'awake-and-alive', title: 'Awake and Alive', artist: 'Skillet', year: 2009, genre: 'rock' },
   { id: 'monster', title: 'Monster', artist: 'Skillet', year: 2009, genre: 'rock' },
-  { id: 'how-he-loves', title: 'How He Loves', artist: 'David Crowder Band', year: 2009, genre: 'worship' },
+  { id: 'how-he-loves', title: 'How He Loves', artist: 'John Mark McMillan', year: 2005, genre: 'worship' },
   { id: 'city-on-our-knees', title: 'City on Our Knees', artist: 'TobyMac', year: 2009, genre: 'pop' },
   { id: 'hello-hurricane', title: 'Hello Hurricane', artist: 'Switchfoot', year: 2009, genre: 'rock' },
   { id: 'the-motions', title: 'The Motions', artist: 'Matthew West', year: 2009, genre: 'ccm' },

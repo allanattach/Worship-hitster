@@ -52,6 +52,18 @@ export function RulesModal({ onClose }: RulesModalProps) {
             </li>
             <li>Den første spiller med 10 kort i korrekt årgangsrækkefølge på sit bræt vinder!</li>
           </ol>
+          <h3 className="rules-subheading">Hvilket årstal gælder?</h3>
+          <p>
+            Som i det almindelige Hitster er årstallet det år sangen <strong>første gang udkom i sin oprindelige
+            form</strong> – ikke året for den indspilning I hører, og ikke et cover.
+          </p>
+          <p>
+            For salmerne betyder det <strong>originalteksten</strong>, uanset sprog. &quot;Be Thou My Vision&quot;
+            står derfor til ca. 750 efter den irske originaltekst, og ikke til den engelske gendigtning fra 1912. På
+            samme måde er &quot;How Great Thou Art&quot; dateret til Bobergs svenske &quot;O store Gud&quot; fra
+            1885. De ældste årstal er forskningsskøn og ikke eksakte år – det gør ingen forskel i spillet, da der
+            ikke ligger andre kort tæt på dem.
+          </p>
           <h3 className="rules-subheading">Brikker</h3>
           <p>
             Alle starter med <strong>2 brikker</strong>. Du tjener en ny ved – ud over årstallet – også at kunne
