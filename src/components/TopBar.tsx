@@ -5,9 +5,20 @@ interface TopBarProps {
   onToggleFullscreen: () => void
   onShowRules: () => void
   onNewGame?: () => void
+  onUndo?: () => void
+  canUndo?: boolean
 }
 
-export function TopBar({ theme, onToggleTheme, isFullscreen, onToggleFullscreen, onShowRules, onNewGame }: TopBarProps) {
+export function TopBar({
+  theme,
+  onToggleTheme,
+  isFullscreen,
+  onToggleFullscreen,
+  onShowRules,
+  onNewGame,
+  onUndo,
+  canUndo,
+}: TopBarProps) {
   return (
     <header className="top-bar">
       <div className="top-bar-brand">
@@ -15,6 +26,18 @@ export function TopBar({ theme, onToggleTheme, isFullscreen, onToggleFullscreen,
         <span className="brand-name">Worship Hitster</span>
       </div>
       <div className="top-bar-actions">
+        {onUndo && (
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={onUndo}
+            disabled={!canUndo}
+            title={canUndo ? 'Fortryd sidste handling' : 'Der er intet at fortryde'}
+            aria-label="Fortryd"
+          >
+            ↶
+          </button>
+        )}
         {onNewGame && (
           <button type="button" className="icon-btn" onClick={onNewGame} title="Nyt spil" aria-label="Nyt spil">
             ↺

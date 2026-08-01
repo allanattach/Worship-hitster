@@ -1,3 +1,4 @@
+import { START_TOKENS } from './gameLogic'
 import type { GameState, SpotifyTokens, Theme } from '../types'
 
 const KEYS = {
@@ -27,8 +28,19 @@ function write(key: string, value: unknown) {
   }
 }
 
+/** Fills in fields added after a game was saved, so a game in progress from an
+ * older version keeps working instead of ending up with NaN tokens. */
 export function loadGameState(): GameState | null {
-  return read<GameState>(KEYS.game)
+  const saved = read<GameState>(KEYS.game)
+  if (!saved) return null
+  return {
+    ...saved,
+    challengerId: saved.challengerId ?? null,
+    players: (saved.players ?? []).map((player) => ({
+      ...player,
+      tokens: typeof player.tokens === 'number' ? player.tokens : START_TOKENS,
+    })),
+  }
 }
 
 export function saveGameState(state: GameState) {

@@ -22,14 +22,22 @@ export interface Player {
   id: string
   name: string
   board: PlacedCard[]
+  /** Spent to bid in on another player's card, earned by naming title and artist. */
+  tokens: number
 }
 
-export type GamePhase = 'setup' | 'playing' | 'placing' | 'reveal' | 'gameover'
+export type GamePhase = 'setup' | 'playing' | 'placing' | 'reveal' | 'challenge' | 'gameover'
 
 export interface RoundResult {
   correct: boolean
   song: PlacedCard
   insertIndex: number
+  /** Set when the card was claimed by a player bidding in rather than by the
+   * player whose turn it was. */
+  challengerId?: string
+  challengerCorrect?: boolean
+  /** Guards the once-per-round token award from being claimed twice. */
+  tokenAwarded?: boolean
 }
 
 export interface GameState {
@@ -44,6 +52,8 @@ export interface GameState {
   lastResult: RoundResult | null
   winnerId: string | null
   targetCards: number
+  /** Player currently bidding in on the card, during the challenge phase. */
+  challengerId: string | null
 }
 
 export interface SpotifyTokens {

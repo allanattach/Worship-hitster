@@ -25,8 +25,13 @@ export function RulesModal({ onClose }: RulesModalProps) {
               hører til kronologisk i forhold til dine andre kort.
             </li>
             <li>Bekræft placeringen – kortet vendes, og du ser om du gættede rigtigt.</li>
-            <li>Gættede du rigtigt, bliver kortet på dit bræt. Gættede du forkert, kasseres kortet.</li>
-            <li>Turen går videre til næste spiller.</li>
+            <li>Gættede du rigtigt, bliver kortet på dit bræt.</li>
+            <li>
+              Gættede du <strong>forkert</strong>, kan de andre spillere <strong>byde ind</strong>: den der tror at
+              vide hvornår sangen er fra, betaler én brik og placerer kortet på sin egen tidslinje. Rammer man
+              rigtigt, vindes kortet – ellers er brikken tabt.
+            </li>
+            <li>Turen går videre til næste spiller. Et kort ingen vandt, kasseres.</li>
             <li>
               Kan sangen ikke afspilles – eller findes den ikke på Spotify – så tryk <strong>Nyt kort</strong>. Du
               får en ny sang uden at miste turen, og det tælles ikke som en fejl.
@@ -38,6 +43,19 @@ export function RulesModal({ onClose }: RulesModalProps) {
             </li>
             <li>Den første spiller med 10 kort i korrekt årgangsrækkefølge på sit bræt vinder!</li>
           </ol>
+          <h3 className="rules-subheading">Brikker</h3>
+          <p>
+            Alle starter med <strong>2 brikker</strong>. Du tjener en ny ved – ud over årstallet – også at kunne
+            sige <strong>titel og kunstner</strong>: tryk på brik-knappen når kortet er vendt, så tæller den med.
+            Spillet kan ikke høre hvad I siger, så I holder hinanden i ørerne som ved et almindeligt brætspil.
+          </p>
+          <p>Brikker bruges til at byde ind på et kort som en anden har placeret forkert.</p>
+          <h3 className="rules-subheading">Fortryd</h3>
+          <p>
+            Trykkede du forkert? Brug <strong>↶</strong> øverst til at fortryde. Den går flere trin tilbage, så også
+            en placering et par ture tilbage kan rulles tilbage. Fortryd gælder den igangværende session – lukker du
+            appen, gemmes spillet som det står.
+          </p>
           <p>
             Spillets fremgang gemmes automatisk, så du roligt kan lukke appen og fortsætte senere. Kun den enhed
             der afspiller musikken skal logge ind med Spotify, og forbindelsen huskes, så det kun skal gøres én

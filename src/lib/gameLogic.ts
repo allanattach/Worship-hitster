@@ -2,6 +2,7 @@ import { SONGS } from '../data/songs'
 import type { GameState, PlacedCard, Player, Song } from '../types'
 
 export const TARGET_CARDS = 10
+export const START_TOKENS = 2
 
 export function shuffle<T>(input: T[]): T[] {
   const arr = [...input]
@@ -21,6 +22,7 @@ export function createInitialGameState(playerNames: string[]): GameState {
     id: makePlayerId(name, index),
     name: name.trim(),
     board: [],
+    tokens: START_TOKENS,
   }))
 
   const deck = shuffle(SONGS)
@@ -46,6 +48,7 @@ export function createInitialGameState(playerNames: string[]): GameState {
     lastResult: null,
     winnerId: null,
     targetCards: TARGET_CARDS,
+    challengerId: null,
   }
 }
 
@@ -128,7 +131,8 @@ export function placeCard(state: GameState, insertIndex: number): GameState {
   return {
     ...state,
     players,
-    discard: correct ? state.discard : [...state.discard, song],
+    // A wrongly placed card is not discarded yet: another player may still bid
+    // in and claim it. advanceTurn discards whatever nobody took.
     currentCard: song,
     currentCardRevealed: true,
     lastResult: { correct, song, insertIndex },
@@ -137,16 +141,95 @@ export function placeCard(state: GameState, insertIndex: number): GameState {
   }
 }
 
+/** Players other than the one in turn who could still bid in on this card. */
+export function eligibleChallengers(state: GameState): Player[] {
+  if (state.phase !== 'reveal') return []
+  const result = state.lastResult
+  if (!result || result.correct || result.challengerId) return []
+  const current = state.players[state.currentPlayerIndex]
+  return state.players.filter((p) => p.id !== current.id && p.tokens > 0)
+}
+
+/** Spends a token to let `playerId` try to claim the card the player in turn
+ * placed wrongly. */
+export function beginChallenge(state: GameState, playerId: string): GameState {
+  if (!eligibleChallengers(state).some((p) => p.id === playerId)) return state
+  const index = state.players.findIndex((p) => p.id === playerId)
+  return {
+    ...state,
+    players: state.players.map((p) => (p.id === playerId ? { ...p, tokens: p.tokens - 1 } : p)),
+    challengerId: playerId,
+    viewingPlayerIndex: index,
+    phase: 'challenge',
+  }
+}
+
+export function cancelChallenge(state: GameState): GameState {
+  if (state.phase !== 'challenge' || !state.challengerId) return state
+  // Hand the token back, since nothing was staked in the end.
+  return {
+    ...state,
+    players: state.players.map((p) => (p.id === state.challengerId ? { ...p, tokens: p.tokens + 1 } : p)),
+    challengerId: null,
+    viewingPlayerIndex: state.currentPlayerIndex,
+    phase: 'reveal',
+  }
+}
+
+export function resolveChallenge(state: GameState, insertIndex: number): GameState {
+  const song = state.currentCard
+  if (state.phase !== 'challenge' || !song || !state.challengerId) return state
+  const challengerIndex = state.players.findIndex((p) => p.id === state.challengerId)
+  if (challengerIndex < 0) return state
+
+  const challenger = state.players[challengerIndex]
+  const correct = validatePlacement(challenger.board, insertIndex, song)
+
+  const players = state.players.map((p, idx) => {
+    if (idx !== challengerIndex || !correct) return p
+    const board = [...p.board]
+    board.splice(insertIndex, 0, song)
+    return { ...p, board }
+  })
+
+  const won = correct && players[challengerIndex].board.length >= state.targetCards
+
+  return {
+    ...state,
+    players,
+    lastResult: { ...state.lastResult!, challengerId: state.challengerId, challengerCorrect: correct },
+    phase: won ? 'gameover' : 'reveal',
+    winnerId: won ? players[challengerIndex].id : null,
+  }
+}
+
+/** Awards the player in turn a token for also naming the title and artist.
+ * The group vouches for the answer; the app only tracks the count. */
+export function awardToken(state: GameState): GameState {
+  if (state.phase !== 'reveal' || !state.lastResult || state.lastResult.tokenAwarded) return state
+  return {
+    ...state,
+    players: state.players.map((p, idx) =>
+      idx === state.currentPlayerIndex ? { ...p, tokens: p.tokens + 1 } : p,
+    ),
+    lastResult: { ...state.lastResult, tokenAwarded: true },
+  }
+}
+
 export function advanceTurn(state: GameState): GameState {
   if (state.phase === 'gameover') return state
+  const result = state.lastResult
+  const unclaimed = result && !result.correct && !result.challengerCorrect ? result.song : null
   const nextIndex = (state.currentPlayerIndex + 1) % state.players.length
   return {
     ...state,
     currentPlayerIndex: nextIndex,
     viewingPlayerIndex: nextIndex,
+    discard: unclaimed ? [...state.discard, unclaimed] : state.discard,
     currentCard: null,
     currentCardRevealed: false,
     lastResult: null,
+    challengerId: null,
     phase: 'playing',
   }
 }

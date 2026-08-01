@@ -13,7 +13,23 @@ import { useTheme } from './hooks/useTheme'
 function App() {
   const { theme, toggleTheme } = useTheme()
   const { isFullscreen, toggleFullscreen } = useFullscreen()
-  const { state, startGame, draw, redraw, attachMeta, place, next, viewPlayer, resetGame } = useGameState()
+  const {
+    state,
+    canUndo,
+    undo,
+    startGame,
+    draw,
+    redraw,
+    attachMeta,
+    place,
+    next,
+    claimToken,
+    startChallenge,
+    abortChallenge,
+    settleChallenge,
+    viewPlayer,
+    resetGame,
+  } = useGameState()
   const spotifyAuth = useSpotifyAuth()
   const spotifyPlayer = useSpotifyPlayer(spotifyAuth.connected, spotifyAuth.getValidAccessToken)
   const [showRules, setShowRules] = useState(false)
@@ -34,6 +50,8 @@ function App() {
         onToggleFullscreen={toggleFullscreen}
         onShowRules={() => setShowRules(true)}
         onNewGame={state.phase !== 'setup' ? handleNewGame : undefined}
+        onUndo={state.phase !== 'setup' ? undo : undefined}
+        canUndo={canUndo}
       />
 
       <main className="app-main">
@@ -58,6 +76,10 @@ function App() {
             onNext={next}
             onViewPlayer={viewPlayer}
             onNewGame={handleNewGame}
+            onClaimToken={claimToken}
+            onStartChallenge={startChallenge}
+            onAbortChallenge={abortChallenge}
+            onSettleChallenge={settleChallenge}
             spotifyConnected={spotifyAuth.connected}
             getValidAccessToken={spotifyAuth.getValidAccessToken}
             spotifyDeviceId={spotifyPlayer.deviceId}

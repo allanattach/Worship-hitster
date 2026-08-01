@@ -32,6 +32,12 @@ export function PlayerSwitcher({ players, currentPlayerIndex, viewingPlayerIndex
             <span className="player-pill-name">{player.name}</span>
             <span className="player-pill-count">
               {player.board.length}/{targetCards}
+              {player.tokens > 0 && (
+                <span className="player-pill-tokens" title={`${player.tokens} brikker`}>
+                  {' · '}
+                  {player.tokens}●
+                </span>
+              )}
             </span>
           </button>
         ))}

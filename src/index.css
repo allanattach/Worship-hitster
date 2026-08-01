@@ -923,6 +923,53 @@ img {
   justify-content: center;
 }
 
+.player-pill-tokens {
+  color: var(--gold);
+  font-weight: 650;
+}
+
+.player-pill--turn .player-pill-tokens {
+  color: color-mix(in srgb, var(--accent-ink) 85%, transparent);
+}
+
+/* Bidding in */
+.challenge-banner {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--gold) 20%, transparent);
+  border: 1px solid var(--gold);
+  color: var(--text);
+  font-weight: 620;
+  font-size: 0.9rem;
+}
+
+.challenge-offer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  padding: 12px;
+  border-radius: var(--radius);
+  border: 1px dashed var(--border-strong);
+  background: var(--surface-2);
+}
+
+.challenge-offer-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.token-btn {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.token-awarded {
+  color: var(--gold);
+  font-weight: 620;
+  font-size: 0.9rem;
+}
+
 .mystery-error {
   padding: 8px 12px;
   border-radius: 10px;
@@ -992,6 +1039,12 @@ img {
   gap: 13px;
   line-height: 1.65;
   font-size: 0.94rem;
+}
+
+.rules-subheading {
+  margin-top: 6px;
+  font-size: 1rem;
+  color: var(--accent);
 }
 
 .modal-body ol {

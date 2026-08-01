@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { GameState } from '../types'
+import { eligibleChallengers } from '../lib/gameLogic'
 import { findTrack, playTrackUri } from '../lib/spotifyApi'
 import { MysteryCard } from './MysteryCard'
 import { PlayerSwitcher } from './PlayerSwitcher'
@@ -16,6 +17,10 @@ interface GameScreenProps {
   onNext: () => void
   onViewPlayer: (index: number) => void
   onNewGame: () => void
+  onClaimToken: () => void
+  onStartChallenge: (playerId: string) => void
+  onAbortChallenge: () => void
+  onSettleChallenge: (insertIndex: number) => void
   spotifyConnected: boolean
   getValidAccessToken: () => Promise<string | null>
   spotifyDeviceId: string | null
@@ -35,6 +40,10 @@ export function GameScreen({
   onNext,
   onViewPlayer,
   onNewGame,
+  onClaimToken,
+  onStartChallenge,
+  onAbortChallenge,
+  onSettleChallenge,
   spotifyConnected,
   getValidAccessToken,
   spotifyDeviceId,
@@ -48,6 +57,14 @@ export function GameScreen({
   const currentPlayer = players[currentPlayerIndex]
   const viewingPlayer = players[viewingPlayerIndex]
   const isOwnTurn = viewingPlayerIndex === currentPlayerIndex
+  const challenger = players.find((p) => p.id === state.challengerId) ?? null
+  const challengers = eligibleChallengers(state)
+
+  // During a challenge the board being shown belongs to the bidder, and it is
+  // their placement that the taps resolve.
+  const isChallengerBoard = phase === 'challenge' && challenger?.id === viewingPlayer.id
+  const boardInteractive = (isOwnTurn && phase === 'placing') || isChallengerBoard
+  const handleGap = isChallengerBoard ? onSettleChallenge : onPlace
   const [trackError, setTrackError] = useState<string | null>(null)
   const [zoom, setZoom] = useState(1)
   const [fit, setFit] = useState(true)
@@ -129,7 +146,7 @@ export function GameScreen({
       <section className="board-section">
         <div className="board-header">
           <h3 className="board-heading">
-            {viewingPlayer.name}s tidslinje
+            {isChallengerBoard ? `${viewingPlayer.name}s tidslinje – byder ind` : `${viewingPlayer.name}s tidslinje`}
             <span className="board-count">
               {viewingPlayer.board.length} / {targetCards}
             </span>
@@ -144,8 +161,8 @@ export function GameScreen({
         </div>
         <Timeline
           board={viewingPlayer.board}
-          interactive={isOwnTurn && phase === 'placing'}
-          onSelectGap={onPlace}
+          interactive={boardInteractive}
+          onSelectGap={handleGap}
           lastResult={isOwnTurn ? lastResult : null}
           zoom={zoom}
           fit={fit}
@@ -159,6 +176,8 @@ export function GameScreen({
           currentCard={currentCard}
           lastResult={lastResult}
           currentPlayerName={currentPlayer.name}
+          challenger={challenger}
+          challengers={challengers}
           spotifyConnected={spotifyConnected}
           spotifyReady={spotifyReady}
           isPaused={isPaused}
@@ -168,6 +187,9 @@ export function GameScreen({
           onTogglePlay={togglePlay}
           onRedraw={handleRedraw}
           onNext={onNext}
+          onClaimToken={onClaimToken}
+          onStartChallenge={onStartChallenge}
+          onAbortChallenge={onAbortChallenge}
         />
       </section>
     </div>
