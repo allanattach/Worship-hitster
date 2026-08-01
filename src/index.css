@@ -881,6 +881,16 @@ img {
   max-width: 360px;
 }
 
+/* Everything except the card face. Kept as one element so the face and the
+   surrounding text can be placed side by side where there is room. */
+.mystery-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+}
+
 .mystery-card-face {
   position: relative;
   width: clamp(160px, 44vw, 208px);
@@ -1391,6 +1401,58 @@ img {
   }
   .mystery-card-face {
     border-radius: 17px;
+  }
+}
+
+/* ---------- Portrait on a tablet ----------
+   Wide enough to set the turn banner, the card and the round's information
+   beside each other instead of in one tall column. A phone is not, so it keeps
+   stacking. */
+@media (orientation: portrait) and (min-width: 700px) {
+  .mystery-section {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(14px, 2.5vw, 26px);
+  }
+
+  .turn-banner {
+    flex: 0 0 auto;
+    max-width: 30%;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .mystery-card {
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(14px, 2.5vw, 24px);
+    max-width: none;
+  }
+
+  .mystery-card-face {
+    flex-shrink: 0;
+  }
+
+  .mystery-body {
+    flex: 1;
+    min-width: 0;
+    align-items: flex-start;
+    text-align: left;
+    gap: 10px;
+  }
+
+  .mystery-hint {
+    max-width: 30ch;
+  }
+
+  .song-links,
+  .mystery-actions {
+    justify-content: flex-start;
+  }
+
+  .challenge-offer {
+    align-items: flex-start;
   }
 }
 

@@ -75,10 +75,12 @@ export function MysteryCard({
         <div className="mystery-card-face mystery-card-face--back">
           <span className="vinyl" aria-hidden="true" />
         </div>
-        <button type="button" className="btn btn-primary btn-lg" onClick={onDraw}>
-          Afspil sang
-        </button>
-        {!spotifyConnected && <p className="mystery-hint">Forbind til Spotify for at høre sangene under spillet.</p>}
+        <div className="mystery-body">
+          <button type="button" className="btn btn-primary btn-lg" onClick={onDraw}>
+            Afspil sang
+          </button>
+          {!spotifyConnected && <p className="mystery-hint">Forbind til Spotify for at høre sangene under spillet.</p>}
+        </div>
       </div>
     )
   }
@@ -87,30 +89,37 @@ export function MysteryCard({
     return (
       <div className="mystery-card">
         {faceDown}
-        <p className="mystery-hint">
-          Placér sangen på {currentPlayerName}s tidslinje – tryk på et af <strong>+</strong>-felterne, hvor du tror
-          den hører til.
-        </p>
-        <div className="mystery-actions">
-          {spotifyConnected && (
-            <button type="button" className="btn btn-secondary btn-small" onClick={onTogglePlay} disabled={!spotifyReady}>
-              {isPaused ? '▶ Afspil' : '⏸ Pause'}
-            </button>
-          )}
-          <button
-            type="button"
-            className={`btn btn-small ${unplayable ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={onRedraw}
-          >
-            ↻ Nyt kort
-          </button>
-        </div>
-        {playbackError && (
-          <p className="mystery-error">
-            {playbackError}
-            {unplayable && ' Træk et nyt kort i stedet.'}
+        <div className="mystery-body">
+          <p className="mystery-hint">
+            Placér sangen på {currentPlayerName}s tidslinje – tryk på et af <strong>+</strong>-felterne, hvor du tror
+            den hører til.
           </p>
-        )}
+          <div className="mystery-actions">
+            {spotifyConnected && (
+              <button
+                type="button"
+                className="btn btn-secondary btn-small"
+                onClick={onTogglePlay}
+                disabled={!spotifyReady}
+              >
+                {isPaused ? '▶ Afspil' : '⏸ Pause'}
+              </button>
+            )}
+            <button
+              type="button"
+              className={`btn btn-small ${unplayable ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={onRedraw}
+            >
+              ↻ Nyt kort
+            </button>
+          </div>
+          {playbackError && (
+            <p className="mystery-error">
+              {playbackError}
+              {unplayable && ' Træk et nyt kort i stedet.'}
+            </p>
+          )}
+        </div>
       </div>
     )
   }
@@ -120,39 +129,41 @@ export function MysteryCard({
     return (
       <div className="mystery-card">
         {faceDown}
-        <p className="mystery-hint">
-          {currentPlayerName} har lagt kortet med bagsiden op. Inden det vendes, kan de andre byde ind – uden at
-          kende årstallet.
-        </p>
-        {playbackControls}
-
-        {bidders.length > 0 && (
-          <div className="challenge-offer">
-            <p className="challenge-offer-label">Tror du at vide hvornår sangen er fra? Byd ind for én brik:</p>
-            <div className="mystery-actions">
-              {bidders.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  className="btn btn-secondary btn-small"
-                  onClick={() => onStartBid(p.id)}
-                >
-                  {p.name} ({p.tokens}●)
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {bidCount > 0 && (
-          <p className="bid-count">
-            {bidCount} bud afgivet – lagt med bagsiden op på {bidCount === 1 ? 'egen tidslinje' : 'egne tidslinjer'}
+        <div className="mystery-body">
+          <p className="mystery-hint">
+            {currentPlayerName} har lagt kortet med bagsiden op. Inden det vendes, kan de andre byde ind – uden at
+            kende årstallet.
           </p>
-        )}
+          {playbackControls}
 
-        <button type="button" className="btn btn-primary btn-lg" onClick={onReveal}>
-          Vend kortet
-        </button>
+          {bidders.length > 0 && (
+            <div className="challenge-offer">
+              <p className="challenge-offer-label">Tror du at vide hvornår sangen er fra? Byd ind for én brik:</p>
+              <div className="mystery-actions">
+                {bidders.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    className="btn btn-secondary btn-small"
+                    onClick={() => onStartBid(p.id)}
+                  >
+                    {p.name} ({p.tokens}●)
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {bidCount > 0 && (
+            <p className="bid-count">
+              {bidCount} bud afgivet – lagt med bagsiden op på {bidCount === 1 ? 'egen tidslinje' : 'egne tidslinjer'}
+            </p>
+          )}
+
+          <button type="button" className="btn btn-primary btn-lg" onClick={onReveal}>
+            Vend kortet
+          </button>
+        </div>
       </div>
     )
   }
@@ -161,15 +172,17 @@ export function MysteryCard({
     return (
       <div className="mystery-card">
         {faceDown}
-        <p className="challenge-banner">{activeBidder.name} byder ind og har betalt en brik</p>
-        <p className="mystery-hint">
-          Placér sangen på {activeBidder.name}s egen tidslinje. Kortet er stadig ikke vendt – buddet er et blindt
-          gæt, ligesom for {currentPlayerName}.
-        </p>
-        {playbackControls}
-        <button type="button" className="btn btn-secondary btn-small" onClick={onCancelBid}>
-          Fortryd budet
-        </button>
+        <div className="mystery-body">
+          <p className="challenge-banner">{activeBidder.name} byder ind og har betalt en brik</p>
+          <p className="mystery-hint">
+            Placér sangen på {activeBidder.name}s egen tidslinje. Kortet er stadig ikke vendt – buddet er et blindt
+            gæt, ligesom for {currentPlayerName}.
+          </p>
+          {playbackControls}
+          <button type="button" className="btn btn-secondary btn-small" onClick={onCancelBid}>
+            Fortryd budet
+          </button>
+        </div>
       </div>
     )
   }
@@ -190,46 +203,48 @@ export function MysteryCard({
           <span className="reveal-artist">{currentCard.artist}</span>
         </div>
 
-        <p className={lastResult.correct ? 'result-correct' : 'result-wrong'}>
-          {lastResult.correct
-            ? `✓ ${currentPlayerName} placerede rigtigt!`
-            : `✗ ${currentPlayerName} placerede forkert`}
-        </p>
+        <div className="mystery-body">
+          <p className={lastResult.correct ? 'result-correct' : 'result-wrong'}>
+            {lastResult.correct
+              ? `✓ ${currentPlayerName} placerede rigtigt!`
+              : `✗ ${currentPlayerName} placerede forkert`}
+          </p>
 
-        {bids.length > 0 && (
-          <ul className="bid-results">
-            {bids.map((bid) => (
-              <li key={bid.playerId} className={bid.playerId === stolenBy ? 'bid-result--won' : undefined}>
-                {bid.playerId === stolenBy
-                  ? `✓ ${nameOf(bid.playerId)} bød ind og snuppede kortet!`
-                  : bid.correct
-                    ? `• ${nameOf(bid.playerId)} bød rigtigt, men ${currentPlayerName} havde kortet først`
-                    : `✗ ${nameOf(bid.playerId)} bød forkert – brikken er tabt`}
-              </li>
+          {bids.length > 0 && (
+            <ul className="bid-results">
+              {bids.map((bid) => (
+                <li key={bid.playerId} className={bid.playerId === stolenBy ? 'bid-result--won' : undefined}>
+                  {bid.playerId === stolenBy
+                    ? `✓ ${nameOf(bid.playerId)} bød ind og snuppede kortet!`
+                    : bid.correct
+                      ? `• ${nameOf(bid.playerId)} bød rigtigt, men ${currentPlayerName} havde kortet først`
+                      : `✗ ${nameOf(bid.playerId)} bød forkert – brikken er tabt`}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="song-links">
+            {songLinks(currentCard).map((link) => (
+              <a key={link.href} className="song-link" href={link.href} target="_blank" rel="noreferrer">
+                {link.label} ↗
+              </a>
             ))}
-          </ul>
-        )}
+          </div>
 
-        <div className="song-links">
-          {songLinks(currentCard).map((link) => (
-            <a key={link.href} className="song-link" href={link.href} target="_blank" rel="noreferrer">
-              {link.label} ↗
-            </a>
-          ))}
+          {phase === 'reveal' && !lastResult.tokenAwarded && (
+            <button type="button" className="btn btn-secondary btn-small token-btn" onClick={onClaimToken}>
+              ● Kunne også titel og kunstner → giv {currentPlayerName} en brik
+            </button>
+          )}
+          {lastResult.tokenAwarded && <p className="token-awarded">● {currentPlayerName} fik en brik</p>}
+
+          {phase === 'reveal' && (
+            <button type="button" className="btn btn-primary btn-lg" onClick={onNext}>
+              Næste spiller
+            </button>
+          )}
         </div>
-
-        {phase === 'reveal' && !lastResult.tokenAwarded && (
-          <button type="button" className="btn btn-secondary btn-small token-btn" onClick={onClaimToken}>
-            ● Kunne også titel og kunstner → giv {currentPlayerName} en brik
-          </button>
-        )}
-        {lastResult.tokenAwarded && <p className="token-awarded">● {currentPlayerName} fik en brik</p>}
-
-        {phase === 'reveal' && (
-          <button type="button" className="btn btn-primary btn-lg" onClick={onNext}>
-            Næste spiller
-          </button>
-        )}
       </div>
     )
   }
