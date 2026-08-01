@@ -6,6 +6,9 @@ export interface Song {
   artist: string
   year: number
   genre: Genre
+  /** Credited to an author rather than a recording artist, so Spotify has to be
+   * searched by title alone. True for hymns and older gospel standards. */
+  traditional?: boolean
 }
 
 export interface PlacedCard extends Song {

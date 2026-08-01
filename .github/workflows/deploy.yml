@@ -51,9 +51,11 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    # Publish from main, and also from the default branch while the repository
-    # is still pointed at the old one. Other branches build and lint only.
-    if: github.ref_name == 'main' || github.ref_name == github.event.repository.default_branch
+    # The github-pages environment rejects deployments from any branch other
+    # than the default one — verified: a run from main had its deploy job
+    # refused before a runner was even assigned. So publishing follows whatever
+    # the default branch currently is, and other branches build and lint only.
+    if: github.ref_name == github.event.repository.default_branch
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

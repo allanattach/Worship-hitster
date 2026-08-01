@@ -19,21 +19,43 @@ function pickAlbumImage(track: SpotifyTrack): string | undefined {
   return (sorted.find((i) => (i.width ?? 0) >= 300) ?? sorted[sorted.length - 1]).url
 }
 
-export async function findTrack(accessToken: string, song: Song): Promise<CachedTrack | null> {
-  const cached = loadTrackCache()[song.id]
-  if (cached) return cached
+/**
+ * Search terms to try in order, stopping at the first hit.
+ *
+ * Hymns and other traditional songs are credited to whoever wrote them, and no
+ * recording artist is called "John Newton" — so an artist-scoped search finds
+ * nothing. For those the title alone is what locates a recording, and any
+ * recording will do, since the point is to hear the song and guess its year.
+ */
+function buildQueries(song: Song): string[] {
+  const byTitle = `track:${song.title}`
+  const byBoth = `${byTitle} artist:${song.artist}`
+  if (song.traditional) return [byTitle, byBoth]
+  // Field-scoped first for precision, then loose text, which tolerates small
+  // differences in how Spotify spells a title or credits a collaboration.
+  return [byBoth, `${song.title} ${song.artist}`, byTitle]
+}
 
-  const query = `track:${song.title} artist:${song.artist}`
+async function searchTrack(accessToken: string, query: string): Promise<SpotifyTrack | null> {
   const url = `${API_BASE}/search?q=${encodeURIComponent(query)}&type=track&limit=1`
   const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } })
   if (!res.ok) return null
   const data = await res.json()
-  const track: SpotifyTrack | undefined = data.tracks?.items?.[0]
-  if (!track) return null
+  return data.tracks?.items?.[0] ?? null
+}
 
-  const entry: CachedTrack = { uri: track.uri, albumImageUrl: pickAlbumImage(track) }
-  saveTrackCacheEntry(song.id, entry)
-  return entry
+export async function findTrack(accessToken: string, song: Song): Promise<CachedTrack | null> {
+  const cached = loadTrackCache()[song.id]
+  if (cached) return cached
+
+  for (const query of buildQueries(song)) {
+    const track = await searchTrack(accessToken, query)
+    if (!track) continue
+    const entry: CachedTrack = { uri: track.uri, albumImageUrl: pickAlbumImage(track) }
+    saveTrackCacheEntry(song.id, entry)
+    return entry
+  }
+  return null
 }
 
 export async function playTrackUri(accessToken: string, deviceId: string, uri: string): Promise<void> {
