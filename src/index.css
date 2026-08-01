@@ -1036,6 +1036,27 @@ img {
   color: var(--text-muted);
 }
 
+/* Read-more links on a revealed card. */
+.song-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  justify-content: center;
+}
+
+.song-link {
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 550;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  transition: border-color 0.16s;
+}
+
+.song-link:hover {
+  border-bottom-color: var(--accent);
+}
+
 .bid-count {
   font-size: 0.82rem;
   color: var(--gold);
@@ -1427,6 +1448,10 @@ img {
   .challenge-banner {
     font-size: 0.8rem;
     padding: 5px 12px;
+  }
+
+  .song-link {
+    font-size: 0.76rem;
   }
 
   /* Keep the winner panel's buttons above the fold. */

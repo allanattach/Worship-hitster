@@ -1,3 +1,4 @@
+import { songLinks } from '../lib/songLinks'
 import type { GamePhase, PlacedCard, Player, RoundResult } from '../types'
 
 interface MysteryCardProps {
@@ -208,6 +209,14 @@ export function MysteryCard({
             ))}
           </ul>
         )}
+
+        <div className="song-links">
+          {songLinks(currentCard).map((link) => (
+            <a key={link.href} className="song-link" href={link.href} target="_blank" rel="noreferrer">
+              {link.label} ↗
+            </a>
+          ))}
+        </div>
 
         {phase === 'reveal' && !lastResult.tokenAwarded && (
           <button type="button" className="btn btn-secondary btn-small token-btn" onClick={onClaimToken}>
