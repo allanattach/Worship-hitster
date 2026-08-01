@@ -13,7 +13,16 @@ import {
   setViewingPlayer,
   startBid,
 } from '../lib/gameLogic'
-import { clearGameState, loadGameState, saveGameState, saveMinYear } from '../lib/storage'
+import {
+  clearGameState,
+  clearResults,
+  loadGameState,
+  recordResult,
+  removeResult,
+  saveGameState,
+  saveMinYear,
+  winsByName,
+} from '../lib/storage'
 import type { GameState } from '../types'
 
 /** How many steps back undo can reach. Deep enough for a misclick and the turn
@@ -21,6 +30,7 @@ import type { GameState } from '../types'
 const UNDO_LIMIT = 25
 
 const SETUP_STATE: GameState = {
+  gameId: '',
   phase: 'setup',
   players: [],
   currentPlayerIndex: 0,
@@ -51,6 +61,17 @@ export function useGameState() {
     past: [],
   }))
   const state = tracked.present
+  const [standings, setStandings] = useState(() => winsByName())
+
+  // Record the win once the game is over, keyed by game id so a re-render
+  // cannot double count. Undoing back out of the win removes it again.
+  const winnerName = state.players.find((p) => p.id === state.winnerId)?.name
+  useEffect(() => {
+    if (!state.gameId) return
+    if (state.phase === 'gameover' && winnerName) recordResult(state.gameId, winnerName)
+    else removeResult(state.gameId)
+    setStandings(winsByName())
+  }, [state.gameId, state.phase, winnerName])
 
   useEffect(() => {
     if (state.phase === 'setup') {
@@ -95,6 +116,22 @@ export function useGameState() {
     setTracked({ present: SETUP_STATE, past: [] })
   }, [])
 
+  /** Straight into another game with the same players and the same year range. */
+  const rematch = useCallback(() => {
+    setTracked(({ present }) => ({
+      present: createInitialGameState(
+        present.players.map((p) => p.name),
+        present.minYear,
+      ),
+      past: [],
+    }))
+  }, [])
+
+  const resetStandings = useCallback(() => {
+    clearResults()
+    setStandings(winsByName())
+  }, [])
+
   const draw = useCallback(() => commit(drawNextCard), [commit])
   const redraw = useCallback(() => commit(redrawCard), [commit])
   const place = useCallback((insertIndex: number) => commit((s) => commitPlacement(s, insertIndex)), [commit])
@@ -133,5 +170,8 @@ export function useGameState() {
     bidPlace,
     viewPlayer,
     resetGame,
+    rematch,
+    standings,
+    resetStandings,
   }
 }

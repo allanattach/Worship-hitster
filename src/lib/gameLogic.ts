@@ -20,6 +20,10 @@ export function shuffle<T>(input: T[]): T[] {
   return arr
 }
 
+function makeGameId() {
+  return `${Date.now().toString(36)}-${Math.floor(Math.random() * 1e6).toString(36)}`
+}
+
 function makePlayerId(name: string, index: number) {
   return `${index}-${name.trim().toLowerCase().replace(/\s+/g, '-')}-${Date.now().toString(36)}`
 }
@@ -44,6 +48,7 @@ export function createInitialGameState(playerNames: string[], minYear: number = 
   })
 
   return {
+    gameId: makeGameId(),
     phase: 'playing',
     players,
     currentPlayerIndex: 0,

@@ -1172,6 +1172,93 @@ img {
   width: 100%;
 }
 
+.winner-undo {
+  align-self: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.winner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  justify-content: center;
+}
+
+/* Win tally, shown after a game and again before the next one. */
+.standings {
+  width: 100%;
+  max-width: 320px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  text-align: left;
+}
+
+.standings--setup {
+  max-width: none;
+}
+
+.standings-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.standings-heading {
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-muted);
+}
+
+.standings-list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.standings-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.92rem;
+}
+
+.standings-rank {
+  width: 1.3rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.standings-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.standings-wins {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.standings-row--winner {
+  font-weight: 650;
+}
+
+.standings-row--winner .standings-wins {
+  color: var(--gold);
+}
+
 @media (max-width: 560px) {
   .board-header {
     flex-wrap: wrap;
@@ -1340,5 +1427,32 @@ img {
   .challenge-banner {
     font-size: 0.8rem;
     padding: 5px 12px;
+  }
+
+  /* Keep the winner panel's buttons above the fold. */
+  .winner-panel {
+    gap: 10px;
+    padding: 16px 20px;
+  }
+
+  .winner-panel h2 {
+    font-size: 1.35rem;
+  }
+
+  .winner-panel > p {
+    font-size: 0.85rem;
+  }
+
+  .standings {
+    padding: 8px 12px;
+  }
+
+  .standings-list {
+    margin-top: 5px;
+    gap: 2px;
+  }
+
+  .standings-list li {
+    font-size: 0.85rem;
   }
 }

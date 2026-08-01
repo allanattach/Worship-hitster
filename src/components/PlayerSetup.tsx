@@ -4,6 +4,8 @@ import { loadMinYear } from '../lib/storage'
 
 interface PlayerSetupProps {
   onStart: (names: string[], minYear: number) => void
+  standings: { name: string; wins: number }[]
+  onResetStandings: () => void
   children?: ReactNode
 }
 
@@ -12,7 +14,7 @@ const YEAR_PRESETS = [ALL_YEARS, 1950, 1970, 1990, 2000, 2010]
 /** Below this the same songs would come round too often to be fun. */
 const MIN_SONGS = 12
 
-export function PlayerSetup({ onStart, children }: PlayerSetupProps) {
+export function PlayerSetup({ onStart, standings, onResetStandings, children }: PlayerSetupProps) {
   const [names, setNames] = useState<string[]>(['', ''])
   const [minYear, setMinYear] = useState<number>(() => loadMinYear())
 
@@ -115,6 +117,26 @@ export function PlayerSetup({ onStart, children }: PlayerSetupProps) {
           {songCount} sange med
           {tooFewSongs ? ` – vælg et tidligere årstal, der skal være mindst ${MIN_SONGS}.` : ''}
         </p>
+
+        {standings.length > 0 && (
+          <div className="standings standings--setup">
+            <div className="standings-header">
+              <h3 className="standings-heading">Vundne spil</h3>
+              <button type="button" className="link-btn link-btn--inline" onClick={onResetStandings}>
+                Nulstil
+              </button>
+            </div>
+            <ol className="standings-list">
+              {standings.map((entry, index) => (
+                <li key={entry.name}>
+                  <span className="standings-rank">{index + 1}.</span>
+                  <span className="standings-name">{entry.name}</span>
+                  <span className="standings-wins">{entry.wins}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
 
         {children}
 

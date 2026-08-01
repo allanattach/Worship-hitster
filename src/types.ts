@@ -63,7 +63,16 @@ export interface RoundResult {
   tokenAwarded?: boolean
 }
 
+/** A finished game, kept so the win tally survives across games. Recorded per
+ * game id, which makes recording idempotent and undoable. */
+export interface GameResult {
+  gameId: string
+  winnerName: string
+}
+
 export interface GameState {
+  /** Identifies this game, so its result is recorded exactly once. */
+  gameId: string
   phase: GamePhase
   players: Player[]
   currentPlayerIndex: number

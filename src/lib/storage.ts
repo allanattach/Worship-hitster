@@ -1,5 +1,5 @@
 import { START_TOKENS } from './gameLogic'
-import type { GameState, SpotifyTokens, Theme } from '../types'
+import type { GameResult, GameState, SpotifyTokens, Theme } from '../types'
 
 const KEYS = {
   game: 'wh_game_state_v1',
@@ -9,6 +9,7 @@ const KEYS = {
   pkceVerifier: 'wh_spotify_pkce_verifier_v1',
   trackCache: 'wh_spotify_track_cache_v1',
   minYear: 'wh_min_year_v1',
+  results: 'wh_results_v1',
 } as const
 
 function read<T>(key: string): T | null {
@@ -36,6 +37,7 @@ export function loadGameState(): GameState | null {
   if (!saved) return null
   return {
     ...saved,
+    gameId: saved.gameId ?? `legacy-${saved.players?.[0]?.id ?? 'game'}`,
     minYear: saved.minYear ?? 0,
     pendingPlacement: saved.pendingPlacement ?? null,
     bids: saved.bids ?? [],
@@ -55,6 +57,47 @@ export function loadMinYear(): number {
 
 export function saveMinYear(minYear: number) {
   write(KEYS.minYear, minYear)
+}
+
+/**
+ * Finished games, one entry per game id.
+ *
+ * Keying on the game id rather than incrementing a counter keeps recording
+ * idempotent, so a re-render cannot double count, and makes a win removable
+ * again if the deciding move is undone.
+ */
+export function loadResults(): GameResult[] {
+  const raw = read<GameResult[]>(KEYS.results)
+  if (!Array.isArray(raw)) return []
+  return raw.filter((r) => r && typeof r.gameId === 'string' && typeof r.winnerName === 'string')
+}
+
+export function recordResult(gameId: string, winnerName: string) {
+  const results = loadResults()
+  if (results.some((r) => r.gameId === gameId)) return
+  write(KEYS.results, [...results, { gameId, winnerName }])
+}
+
+export function removeResult(gameId: string) {
+  const results = loadResults()
+  if (!results.some((r) => r.gameId === gameId)) return
+  write(KEYS.results, results.filter((r) => r.gameId !== gameId))
+}
+
+export function clearResults() {
+  localStorage.removeItem(KEYS.results)
+}
+
+/** Wins per player name, matched case-insensitively but shown as first seen. */
+export function winsByName(): { name: string; wins: number }[] {
+  const tally = new Map<string, { name: string; wins: number }>()
+  for (const { winnerName } of loadResults()) {
+    const key = winnerName.trim().toLowerCase()
+    const entry = tally.get(key)
+    if (entry) entry.wins += 1
+    else tally.set(key, { name: winnerName.trim(), wins: 1 })
+  }
+  return [...tally.values()].sort((a, b) => b.wins - a.wins || a.name.localeCompare(b.name, 'da'))
 }
 
 export function saveGameState(state: GameState) {

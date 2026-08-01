@@ -17,6 +17,10 @@ interface GameScreenProps {
   onNext: () => void
   onViewPlayer: (index: number) => void
   onNewGame: () => void
+  onRematch: () => void
+  standings: { name: string; wins: number }[]
+  onUndo: () => void
+  canUndo: boolean
   onClaimToken: () => void
   onReveal: () => void
   onStartBid: (playerId: string) => void
@@ -41,6 +45,10 @@ export function GameScreen({
   onNext,
   onViewPlayer,
   onNewGame,
+  onRematch,
+  standings,
+  onUndo,
+  canUndo,
   onClaimToken,
   onReveal,
   onStartBid,
@@ -127,7 +135,18 @@ export function GameScreen({
 
   if (phase === 'gameover' && state.winnerId) {
     const winner = players.find((p) => p.id === state.winnerId)
-    if (winner) return <WinnerScreen winner={winner} onNewGame={onNewGame} />
+    if (winner) {
+      return (
+        <WinnerScreen
+          winner={winner}
+          standings={standings}
+          onRematch={onRematch}
+          onNewGame={onNewGame}
+          onUndo={onUndo}
+          canUndo={canUndo}
+        />
+      )
+    }
   }
 
   const combinedError = trackError ?? playbackError

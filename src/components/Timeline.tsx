@@ -39,6 +39,9 @@ interface TimelineProps {
   /** Slot holding a card that has been placed but not yet turned over. Shown
    * face down so everyone can see where it went without seeing what it is. */
   pendingIndex?: number | null
+  /** Share of a short landscape viewport this board may occupy. Lower it where
+   * the board shares the screen with more than the mystery card. */
+  heightShare?: number
 }
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
@@ -52,6 +55,7 @@ export function Timeline({
   fit = true,
   onResolvedWidth,
   pendingIndex = null,
+  heightShare = LANDSCAPE_BOARD_SHARE,
 }: TimelineProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const available = useElementWidth(viewportRef)
@@ -90,7 +94,7 @@ export function Timeline({
   // have to share that space, so the cap halves when wrapping.
   const isLandscape = viewport.width > viewport.height
   const heightCap = isLandscape
-    ? Math.floor((viewport.height * LANDSCAPE_BOARD_SHARE - (rows - 1) * WRAP_ROW_GAP) / (rows * CARD_ASPECT))
+    ? Math.floor((viewport.height * heightShare - (rows - 1) * WRAP_ROW_GAP) / (rows * CARD_ASPECT))
     : CARD_WIDTH_MAX
 
   cardWidth = clamp(cardWidth, CARD_WIDTH_MIN, Math.max(CARD_WIDTH_MIN, Math.min(CARD_WIDTH_MAX, heightCap)))
