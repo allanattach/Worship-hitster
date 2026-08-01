@@ -79,14 +79,27 @@ export function clearPkceVerifier() {
   localStorage.removeItem(KEYS.pkceVerifier)
 }
 
-export type TrackCache = Record<string, string>
-
-export function loadTrackCache(): TrackCache {
-  return read<TrackCache>(KEYS.trackCache) ?? {}
+export interface CachedTrack {
+  uri: string
+  albumImageUrl?: string
 }
 
-export function saveTrackCacheEntry(songId: string, uri: string) {
+type StoredTrackCache = Record<string, CachedTrack | string>
+
+/** Earlier versions cached a bare URI string; normalise those on read so an
+ * existing cache keeps working instead of being thrown away. */
+export function loadTrackCache(): Record<string, CachedTrack> {
+  const raw = read<StoredTrackCache>(KEYS.trackCache) ?? {}
+  const out: Record<string, CachedTrack> = {}
+  for (const [id, value] of Object.entries(raw)) {
+    if (typeof value === 'string') out[id] = { uri: value }
+    else if (value && typeof value.uri === 'string') out[id] = value
+  }
+  return out
+}
+
+export function saveTrackCacheEntry(songId: string, track: CachedTrack) {
   const cache = loadTrackCache()
-  cache[songId] = uri
+  cache[songId] = track
   write(KEYS.trackCache, cache)
 }

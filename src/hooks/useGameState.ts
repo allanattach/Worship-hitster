@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
-import { advanceTurn, createInitialGameState, drawNextCard, placeCard, setViewingPlayer } from '../lib/gameLogic'
+import {
+  advanceTurn,
+  attachTrackMeta,
+  createInitialGameState,
+  drawNextCard,
+  placeCard,
+  redrawCard,
+  setViewingPlayer,
+} from '../lib/gameLogic'
 import { clearGameState, loadGameState, saveGameState } from '../lib/storage'
 import type { GameState } from '../types'
 
@@ -36,6 +44,14 @@ export function useGameState() {
     setState((s) => drawNextCard(s))
   }, [])
 
+  const redraw = useCallback(() => {
+    setState((s) => redrawCard(s))
+  }, [])
+
+  const attachMeta = useCallback((songId: string, meta: { uri?: string; albumImageUrl?: string }) => {
+    setState((s) => attachTrackMeta(s, songId, meta))
+  }, [])
+
   const place = useCallback((insertIndex: number) => {
     setState((s) => placeCard(s, insertIndex))
   }, [])
@@ -53,5 +69,5 @@ export function useGameState() {
     setState(SETUP_STATE)
   }, [])
 
-  return { state, startGame, draw, place, next, viewPlayer, resetGame }
+  return { state, startGame, draw, redraw, attachMeta, place, next, viewPlayer, resetGame }
 }

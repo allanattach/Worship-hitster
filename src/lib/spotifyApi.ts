@@ -1,4 +1,4 @@
-import { loadTrackCache, saveTrackCacheEntry } from './storage'
+import { loadTrackCache, saveTrackCacheEntry, type CachedTrack } from './storage'
 import type { Song } from '../types'
 
 const API_BASE = 'https://api.spotify.com/v1'
@@ -7,11 +7,21 @@ interface SpotifyTrack {
   uri: string
   name: string
   artists: { name: string }[]
+  album?: { images?: { url: string; width: number; height: number }[] }
 }
 
-export async function findTrackUri(accessToken: string, song: Song): Promise<string | null> {
-  const cache = loadTrackCache()
-  if (cache[song.id]) return cache[song.id]
+/** Spotify returns images largest-first. Prefer a mid-size one: big enough for
+ * the reveal card, small enough not to waste bandwidth on the timeline. */
+function pickAlbumImage(track: SpotifyTrack): string | undefined {
+  const images = track.album?.images
+  if (!images?.length) return undefined
+  const sorted = [...images].sort((a, b) => (a.width ?? 0) - (b.width ?? 0))
+  return (sorted.find((i) => (i.width ?? 0) >= 300) ?? sorted[sorted.length - 1]).url
+}
+
+export async function findTrack(accessToken: string, song: Song): Promise<CachedTrack | null> {
+  const cached = loadTrackCache()[song.id]
+  if (cached) return cached
 
   const query = `track:${song.title} artist:${song.artist}`
   const url = `${API_BASE}/search?q=${encodeURIComponent(query)}&type=track&limit=1`
@@ -21,8 +31,9 @@ export async function findTrackUri(accessToken: string, song: Song): Promise<str
   const track: SpotifyTrack | undefined = data.tracks?.items?.[0]
   if (!track) return null
 
-  saveTrackCacheEntry(song.id, track.uri)
-  return track.uri
+  const entry: CachedTrack = { uri: track.uri, albumImageUrl: pickAlbumImage(track) }
+  saveTrackCacheEntry(song.id, entry)
+  return entry
 }
 
 export async function playTrackUri(accessToken: string, deviceId: string, uri: string): Promise<void> {

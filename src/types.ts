@@ -10,6 +10,9 @@ export interface Song {
 
 export interface PlacedCard extends Song {
   spotifyUri?: string
+  /** Album cover from Spotify, looked up when the card is drawn. Stored on the
+   * card so it survives a reload along with the rest of the game state. */
+  albumImageUrl?: string
 }
 
 export interface Player {
@@ -22,7 +25,7 @@ export type GamePhase = 'setup' | 'playing' | 'placing' | 'reveal' | 'gameover'
 
 export interface RoundResult {
   correct: boolean
-  song: Song
+  song: PlacedCard
   insertIndex: number
 }
 
@@ -33,7 +36,7 @@ export interface GameState {
   viewingPlayerIndex: number
   deck: Song[]
   discard: Song[]
-  currentCard: Song | null
+  currentCard: PlacedCard | null
   currentCardRevealed: boolean
   lastResult: RoundResult | null
   winnerId: string | null

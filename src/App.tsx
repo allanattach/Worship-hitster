@@ -13,7 +13,7 @@ import { useTheme } from './hooks/useTheme'
 function App() {
   const { theme, toggleTheme } = useTheme()
   const { isFullscreen, toggleFullscreen } = useFullscreen()
-  const { state, startGame, draw, place, next, viewPlayer, resetGame } = useGameState()
+  const { state, startGame, draw, redraw, attachMeta, place, next, viewPlayer, resetGame } = useGameState()
   const spotifyAuth = useSpotifyAuth()
   const spotifyPlayer = useSpotifyPlayer(spotifyAuth.connected, spotifyAuth.getValidAccessToken)
   const [showRules, setShowRules] = useState(false)
@@ -52,6 +52,8 @@ function App() {
           <GameScreen
             state={state}
             onDraw={draw}
+            onRedraw={redraw}
+            onAttachMeta={attachMeta}
             onPlace={place}
             onNext={next}
             onViewPlayer={viewPlayer}

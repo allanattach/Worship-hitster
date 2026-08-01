@@ -13,7 +13,7 @@ export function WinnerScreen({ winner, onNewGame }: WinnerScreenProps) {
         <h2>🏆 {winner.name} vinder!</h2>
         <p>{winner.name} har samlet {winner.board.length} kort i korrekt årgangsrækkefølge.</p>
         <div className="winner-board">
-          <Timeline board={winner.board} interactive={false} />
+          <Timeline board={winner.board} interactive={false} fit />
         </div>
         <button type="button" className="btn btn-primary" onClick={onNewGame}>
           Spil igen

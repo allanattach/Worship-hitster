@@ -68,6 +68,36 @@ export function drawNextCard(state: GameState): GameState {
   }
 }
 
+/** Records the Spotify lookup on the drawn card so the cover art follows it
+ * onto the board and into saved state. */
+export function attachTrackMeta(
+  state: GameState,
+  songId: string,
+  meta: { uri?: string; albumImageUrl?: string },
+): GameState {
+  if (!state.currentCard || state.currentCard.id !== songId) return state
+  return {
+    ...state,
+    currentCard: {
+      ...state.currentCard,
+      spotifyUri: meta.uri ?? state.currentCard.spotifyUri,
+      albumImageUrl: meta.albumImageUrl ?? state.currentCard.albumImageUrl,
+    },
+  }
+}
+
+/** Swaps the current card for a fresh one when it cannot be played. This is not
+ * a wrong guess: nothing is scored and the same player stays in turn. */
+export function redrawCard(state: GameState): GameState {
+  if (state.phase !== 'placing' || !state.currentCard) return state
+  const withoutCurrent: GameState = {
+    ...state,
+    discard: [...state.discard, state.currentCard],
+    currentCard: null,
+  }
+  return drawNextCard(withoutCurrent)
+}
+
 /** A song fits at insertIndex if it's not earlier than its left neighbour
  * and not later than its right neighbour. Equal years are always valid
  * next to a matching year. */

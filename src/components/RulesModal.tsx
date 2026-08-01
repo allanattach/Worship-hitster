@@ -27,7 +27,15 @@ export function RulesModal({ onClose }: RulesModalProps) {
             <li>Bekræft placeringen – kortet vendes, og du ser om du gættede rigtigt.</li>
             <li>Gættede du rigtigt, bliver kortet på dit bræt. Gættede du forkert, kasseres kortet.</li>
             <li>Turen går videre til næste spiller.</li>
+            <li>
+              Kan sangen ikke afspilles – eller findes den ikke på Spotify – så tryk <strong>Nyt kort</strong>. Du
+              får en ny sang uden at miste turen, og det tælles ikke som en fejl.
+            </li>
             <li>Du kan til enhver tid kigge på de andre spilleres brætter med pilene – det skifter ikke tur.</li>
+            <li>
+              Med <strong>−</strong>, <strong>+</strong> og <strong>Tilpasset</strong> over brættet kan du zoome.
+              &quot;Tilpasset&quot; skalerer kortene, så hele rækken kan ses på én gang.
+            </li>
             <li>Den første spiller med 10 kort i korrekt årgangsrækkefølge på sit bræt vinder!</li>
           </ol>
           <p>
