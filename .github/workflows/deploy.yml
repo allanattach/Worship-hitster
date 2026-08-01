@@ -31,6 +31,11 @@ jobs:
       - run: npm run lint
 
       - run: npm run build
+        env:
+          # Optional: set a repository variable of this name to point the build
+          # at a Spotify app without editing src/config.ts. Not a secret — with
+          # PKCE the Client ID is public by design.
+          VITE_SPOTIFY_CLIENT_ID: ${{ vars.VITE_SPOTIFY_CLIENT_ID }}
 
       - uses: actions/configure-pages@v5
         with:

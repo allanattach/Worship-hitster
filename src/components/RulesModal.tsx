@@ -31,8 +31,9 @@ export function RulesModal({ onClose }: RulesModalProps) {
             <li>Den første spiller med 10 kort i korrekt årgangsrækkefølge på sit bræt vinder!</li>
           </ol>
           <p>
-            Spillets fremgang gemmes automatisk, så du roligt kan lukke appen og fortsætte senere. Din
-            Spotify-forbindelse huskes også, så du kun skal logge ind én gang.
+            Spillets fremgang gemmes automatisk, så du roligt kan lukke appen og fortsætte senere. Kun den enhed
+            der afspiller musikken skal logge ind med Spotify, og forbindelsen huskes, så det kun skal gøres én
+            gang.
           </p>
         </div>
       </div>

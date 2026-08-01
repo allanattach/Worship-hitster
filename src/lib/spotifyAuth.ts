@@ -12,8 +12,12 @@ export const SPOTIFY_SCOPES = [
   'user-read-playback-state',
 ]
 
+/** The URI registered in the Spotify dashboard. Spotify demands an exact
+ * match, so normalise to the directory form: visiting `.../index.html`
+ * directly must still produce `.../`. */
 export function getRedirectUri(): string {
-  return `${window.location.origin}${window.location.pathname}`
+  const path = window.location.pathname.replace(/index\.html$/, '')
+  return `${window.location.origin}${path}`
 }
 
 function randomString(length: number): string {

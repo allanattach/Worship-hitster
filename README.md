@@ -24,19 +24,45 @@ kortet, forkert gæt kasserer det. Første spiller med 10 kort i korrekt
   skal ske én gang
 - Lys/mørkt tema og fuldskærmstilstand
 
-## Spotify-opsætning
+## Spotify
 
-Spillet afspiller sange via Spotifys Web Playback SDK, hvilket kræver en
-Spotify Premium-konto samt din egen Spotify-app:
+Spilleren trykker blot **"Log ind med Spotify"** og logger på med sin egen
+Spotify-konto – der er ingen opsætning, ingen Client ID at indtaste og ingen
+udviklerkonto nødvendig. Forbindelsen gemmes i `localStorage`, så login kun
+sker én gang.
+
+Kun den enhed der afspiller musikken skal logge ind. De øvrige spillere kigger
+med på samme skærm og behøver slet ikke Spotify.
+
+Afspilning i browseren sker via Spotifys Web Playback SDK, som kræver
+**Spotify Premium**. Uden en Spotify-forbindelse kan spillet stadig spilles –
+blot uden lyd.
+
+### For den der hoster appen
+
+Client ID'et er bagt ind i bygget via `src/config.ts`. Det er trygt at
+committe: appen bruger Authorization Code flow med **PKCE**, som er designet
+til klienter uden backend. Der findes ingen client secret, og et Client ID
+giver i sig selv ingen adgang til noget.
+
+Sådan sættes det op én gang:
 
 1. Opret en gratis app på [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
-2. Tilføj den Redirect URI som vises i appens opsætningsskærm. Appen viser
-   altid den korrekte URI for den adresse du spiller fra:
-   - `https://allanattach.github.io/Worship-hitster/` for den deployede version
-   - `http://localhost:5173/` når du kører lokalt med `npm run dev`
-3. Indsæt appens Client ID i "Forbind til Spotify"-feltet i spillet
+2. Tilføj disse Redirect URIs på appen:
+   - `https://allanattach.github.io/Worship-hitster/` (den deployede version)
+   - `http://127.0.0.1:5173/` (lokal udvikling – Spotify accepterer ikke
+     længere `localhost`, så brug `127.0.0.1` i browseren)
+3. Indsæt appens Client ID i `BUILT_IN_CLIENT_ID` i `src/config.ts`, eller sæt
+   repository-variablen `VITE_SPOTIFY_CLIENT_ID` i GitHub så bygget henter det
+   derfra
 
-Uden en Spotify-forbindelse kan spillet stadig spilles – blot uden lyd.
+En nyoprettet Spotify-app står i *Development mode*, hvor kun konti du selv har
+tilføjet under **User Management** i dashboardet kan logge ind (op til 25).
+Skal andre end dig selv kunne afspille musik, skal deres Spotify-email
+tilføjes der.
+
+Spiller man fra en fork med sin egen Spotify-app, kan man i stedet trykke
+"Brug min egen Spotify-app" i opsætningsskærmen og indtaste et andet Client ID.
 
 ## Deployment
 

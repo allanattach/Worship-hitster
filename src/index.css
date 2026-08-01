@@ -175,6 +175,15 @@ button {
   margin-left: auto;
 }
 
+/* Inside a stacked column rather than pushed to the end of a row. */
+.link-btn--inline {
+  margin-left: 0;
+  align-self: flex-start;
+  padding: 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
 /* Setup screen */
 .setup-screen {
   display: flex;
