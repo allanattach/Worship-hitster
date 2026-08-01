@@ -12,7 +12,7 @@
  * A `VITE_SPOTIFY_CLIENT_ID` build variable overrides it if present, so a fork
  * can point at its own Spotify app without editing code.
  */
-const BUILT_IN_CLIENT_ID = ''
+const BUILT_IN_CLIENT_ID = '1703d11cb4124bcb8b0fe8a62799c60c'
 
 export const DEFAULT_SPOTIFY_CLIENT_ID = (
   import.meta.env.VITE_SPOTIFY_CLIENT_ID || BUILT_IN_CLIENT_ID
