@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useElementWidth } from '../hooks/useElementWidth'
+import { useViewportSize } from '../hooks/useViewportSize'
 import type { PlacedCard, RoundResult } from '../types'
 import { CardTile } from './CardTile'
 
@@ -8,6 +9,11 @@ export const CARD_WIDTH_BASE = 132
 export const CARD_WIDTH_MAX = 210
 const COMPACT_BELOW = 106
 const ROW_GAP = 2
+/** A card is roughly this many times taller than it is wide, including its text. */
+const CARD_ASPECT = 1.4
+/** Share of a short landscape viewport the board may take, leaving room for the
+ * turn banner, the switcher and the mystery card without scrolling. */
+const LANDSCAPE_BOARD_SHARE = 0.44
 
 // Insertion gaps must stay tappable, but eleven of them at full width eat more
 // room than the cards do, so they shrink first when space runs short.
@@ -44,6 +50,7 @@ export function Timeline({
 }: TimelineProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const available = useElementWidth(viewportRef)
+  const viewport = useViewportSize()
 
   const gapCount = board.length + 1
   // A face-down card occupies a slot of its own, so it counts toward the fit.
@@ -66,7 +73,14 @@ export function Timeline({
     cardWidth = CARD_WIDTH_BASE * zoom
   }
 
-  cardWidth = clamp(cardWidth, CARD_WIDTH_MIN, CARD_WIDTH_MAX)
+  // On a wide, short screen a few large cards would push the mystery card off
+  // the bottom, so cap the width by the vertical space the board may use.
+  const isLandscape = viewport.width > viewport.height
+  const heightCap = isLandscape
+    ? Math.floor((viewport.height * LANDSCAPE_BOARD_SHARE) / CARD_ASPECT)
+    : CARD_WIDTH_MAX
+
+  cardWidth = clamp(cardWidth, CARD_WIDTH_MIN, Math.max(CARD_WIDTH_MIN, Math.min(CARD_WIDTH_MAX, heightCap)))
   const compact = cardWidth < COMPACT_BELOW
 
   const contentWidth = cardCount * cardWidth + gapCount * gapWidth + (gapCount + cardCount) * ROW_GAP

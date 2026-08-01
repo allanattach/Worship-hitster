@@ -1119,3 +1119,165 @@ img {
     border-radius: 17px;
   }
 }
+
+/* ---------- Landscape on a tablet ----------
+   Wide but short: stack nothing. The board sits beside the mystery card so the
+   card, the bidding options and the results are all on screen at once. */
+@media (orientation: landscape) and (min-width: 860px) and (max-height: 900px) {
+  .app-shell {
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .app-main {
+    max-width: none;
+    min-height: 0;
+    padding: 12px clamp(12px, 2vw, 22px);
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  .top-bar {
+    padding: 7px clamp(12px, 2vw, 22px);
+  }
+
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .game-screen {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(250px, 30%, 340px);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    column-gap: clamp(14px, 2vw, 24px);
+    row-gap: 8px;
+  }
+
+  .turn-banner {
+    grid-column: 1;
+    grid-row: 1;
+    gap: 2px;
+  }
+
+  .turn-banner-label {
+    font-size: 0.62rem;
+  }
+
+  .turn-banner-name {
+    font-size: clamp(1.2rem, 3.4vh, 1.6rem);
+  }
+
+  .player-switcher {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .player-pills {
+    padding-bottom: 4px;
+  }
+
+  .player-pill {
+    padding: 5px 12px;
+  }
+
+  .board-section {
+    grid-column: 1;
+    grid-row: 3;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px 4px;
+  }
+
+  .board-header {
+    margin-bottom: 6px;
+  }
+
+  /* Centre the row in the space it has rather than pinning it to the top. */
+  .board-section .timeline-viewport {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  /* The mystery column owns the full height and scrolls only if a very short
+     screen leaves it no choice. */
+  .mystery-section {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    align-items: center;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .mystery-card {
+    gap: 9px;
+    max-width: none;
+    width: 100%;
+    justify-content: center;
+    min-height: 100%;
+  }
+
+  .mystery-card-face {
+    width: clamp(104px, 21vh, 150px);
+    border-radius: 16px;
+    padding: 10px;
+  }
+
+  .reveal-year {
+    font-size: clamp(1.1rem, 3.2vh, 1.5rem);
+  }
+
+  .reveal-title {
+    font-size: 0.82rem;
+  }
+
+  .reveal-artist {
+    font-size: 0.74rem;
+  }
+
+  .reveal-art {
+    width: 38%;
+    margin-bottom: 3px;
+  }
+
+  .mystery-hint {
+    font-size: 0.8rem;
+    max-width: none;
+  }
+
+  .btn-lg {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+  }
+
+  .challenge-offer {
+    padding: 8px 10px;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .challenge-offer-label,
+  .bid-count,
+  .token-awarded {
+    font-size: 0.76rem;
+  }
+
+  .bid-results {
+    font-size: 0.78rem;
+  }
+
+  .token-btn {
+    font-size: 0.76rem;
+    padding: 6px 10px;
+  }
+
+  .challenge-banner {
+    font-size: 0.8rem;
+    padding: 5px 12px;
+  }
+}
